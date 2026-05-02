@@ -9,7 +9,7 @@
       overflow: hidden;
       background: black;
       color: #00ffcc;
-      font-family: "Share Tech Mono", monospace;
+      font-family: monospace;
       text-align: center;
     }
 
@@ -69,7 +69,7 @@
       margin-top: 20px;
       border: 1px solid #00ffcc;
       padding: 15px;
-      width: 300px;
+      width: 320px;
       margin-left: auto;
       margin-right: auto;
       text-align: left;
@@ -105,7 +105,7 @@
 <audio id="beep" src="https://www.soundjay.com/button/beep-07.wav"></audio>
 
 <script>
-/* MATRIX RAIN */
+/* MATRIX */
 const canvas = document.getElementById("matrix");
 const ctx = canvas.getContext("2d");
 
@@ -137,13 +137,18 @@ function draw() {
 }
 setInterval(draw, 50);
 
-/* ROUTES */
+/* 🔥 FIXED ROUTES (REAL URL SYSTEM) */
 const routes = {
-  "2010": "MultiMovies → https://multimovies.fyi",
-  "1111": "Hacker AI → https://hackerai.co/",
-  "1212": "NoteGPT → https://notegpt.io",
-  "1819": "TBCPL → https://tbcpl.lol/"
+  "2010": { name: "MultiMovies", url: "https://multimovies.fyi" },
+  "1111": { name: "Hacker AI", url: "https://hackerai.co/" },
+  "1212": { name: "NoteGPT", url: "https://notegpt.io" },
+  "1819": { name: "TBCPL", url: "https://tbcpl.lol/" },
 
+  // your custom ones
+  "2222": { name: "WhatsMyName", url: "https://whatsmyname.me/" },
+  "4111": { name: "FMHY", url: "https://fmhy.net/" },
+  "8787": { name: "Moewalls", url: "https://moewalls.com/" },
+  "4545": { name: "BugMeNot", url: "https://bugmenot.com/" }
 };
 
 /* TERMINAL */
@@ -157,16 +162,16 @@ function go() {
 
   setTimeout(() => {
     if (routes[code]) {
-      status.innerText = "ACCESS GRANTED";
+      status.innerText = "ACCESS GRANTED 🚀";
 
       setTimeout(() => {
-        window.location.href = "/redirect?code=" + code;
-      }, 1000);
+        window.location.href = routes[code].url;
+      }, 900);
 
     } else {
       deny();
     }
-  }, 1000);
+  }, 800);
 }
 
 function deny() {
@@ -182,7 +187,7 @@ function deny() {
   }, 800);
 }
 
-/* ADMIN TOGGLE */
+/* ADMIN PANEL */
 let adminVisible = false;
 
 function openAdmin() {
@@ -191,22 +196,17 @@ function openAdmin() {
 
   if (pass === "1918") {
 
+    adminVisible = !adminVisible;
+    panel.style.display = adminVisible ? "block" : "none";
+
     if (adminVisible) {
-      panel.style.display = "none";
-      panel.innerHTML = "";
-      adminVisible = false;
-
-    } else {
-      panel.style.display = "block";
-
       let content = "<h3>ADMIN ACCESS</h3>";
 
       for (let code in routes) {
-        content += "<p><b>" + code + "</b> → " + routes[code] + "</p>";
+        content += `<p><b>${code}</b> → ${routes[code].name}</p>`;
       }
 
       panel.innerHTML = content;
-      adminVisible = true;
     }
 
   } else {
