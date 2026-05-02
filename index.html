@@ -120,22 +120,22 @@ function go() {
   const beep = document.getElementById("beep");
 
   beep.play();
-
   status.innerText = "ACCESSING...";
-  
+
+  // valid codes (same as your backend)
+  const validCodes = ["2010", "1111", "1212", "1819"];
+
   setTimeout(() => {
-    fetch("/redirect?code=" + code, { method: "HEAD" })
-      .then(res => {
-        if (res.status === 302) {
-          status.innerText = "ACCESS GRANTED";
-          setTimeout(() => {
-            window.location.href = "/redirect?code=" + code;
-          }, 1000);
-        } else {
-          deny();
-        }
-      })
-      .catch(() => deny());
+    if (validCodes.includes(code)) {
+      status.innerText = "ACCESS GRANTED";
+
+      setTimeout(() => {
+        window.location.href = "/redirect?code=" + code;
+      }, 1000);
+
+    } else {
+      deny();
+    }
   }, 1000);
 }
 
