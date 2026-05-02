@@ -1,16 +1,15 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>ACCESS TERMINAL</title>
+  <title>ACCESS TERMINAL v3</title>
 
   <style>
     body {
       margin: 0;
-      overflow: hidden;
       background: black;
       color: #00ffcc;
       font-family: monospace;
-      text-align: center;
+      overflow: hidden;
     }
 
     canvas {
@@ -20,68 +19,83 @@
       z-index: -1;
     }
 
-    .container {
+    /* BOOT */
+    #boot {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      padding: 20px;
+      white-space: pre-line;
+    }
+
+    /* LOGIN */
+    #login {
+      display: none;
+      text-align: center;
       margin-top: 15%;
     }
 
-    h1 {
-      letter-spacing: 3px;
-      text-shadow: 0 0 10px #00ffcc;
-    }
-
     input {
-      padding: 12px;
+      padding: 10px;
       background: transparent;
       border: 1px solid #00ffcc;
       color: #00ffcc;
+      margin: 5px;
       text-align: center;
       outline: none;
     }
 
     button {
-      margin-top: 20px;
-      padding: 10px 25px;
+      padding: 10px 20px;
       background: transparent;
       border: 1px solid #00ffcc;
       color: #00ffcc;
       cursor: pointer;
+      margin-top: 10px;
+    }
+
+    /* LOADING */
+    #loading {
+      display: none;
+      text-align: center;
+      margin-top: 20%;
+    }
+
+    .bar {
+      width: 300px;
+      height: 10px;
+      border: 1px solid #00ffcc;
+      margin: auto;
+      margin-top: 20px;
+    }
+
+    .fill {
+      height: 100%;
+      width: 0%;
+      background: #00ffcc;
+    }
+
+    /* TERMINAL */
+    #terminal {
+      display: none;
+      text-align: center;
+      margin-top: 10%;
     }
 
     #status {
-      margin-top: 20px;
+      margin-top: 15px;
       height: 20px;
-    }
-
-    .shake {
-      animation: shake 0.3s;
-    }
-
-    @keyframes shake {
-      0% { transform: translateX(-5px); }
-      25% { transform: translateX(5px); }
-      50% { transform: translateX(-5px); }
-      75% { transform: translateX(5px); }
-      100% { transform: translateX(0); }
     }
 
     #adminPanel {
       display: none;
       margin-top: 20px;
       border: 1px solid #00ffcc;
-      padding: 15px;
+      padding: 10px;
       width: 320px;
       margin-left: auto;
       margin-right: auto;
       text-align: left;
-      box-shadow: 0 0 10px #00ffcc;
-    }
-
-    .admin-btn {
-      position: fixed;
-      bottom: 10px;
-      right: 10px;
-      font-size: 12px;
-      opacity: 0.6;
     }
   </style>
 </head>
@@ -90,17 +104,35 @@
 
 <canvas id="matrix"></canvas>
 
-<div class="container">
+<!-- BOOT -->
+<div id="boot"></div>
+
+<!-- LOGIN -->
+<div id="login">
+  <h2>SYSTEM LOGIN</h2>
+  <input id="user" placeholder="USERNAME"><br>
+  <input id="pass" type="password" placeholder="PASSWORD"><br>
+  <button onclick="login()">ENTER</button>
+</div>
+
+<!-- LOADING -->
+<div id="loading">
+  <h3>VERIFYING ACCESS...</h3>
+  <div class="bar"><div class="fill" id="fill"></div></div>
+</div>
+
+<!-- TERMINAL -->
+<div id="terminal">
   <h1>ACCESS TERMINAL</h1>
+
   <input id="code" placeholder="ENTER CODE">
   <br>
   <button onclick="go()">EXECUTE</button>
+
   <div id="status"></div>
 
   <div id="adminPanel"></div>
 </div>
-
-<button class="admin-btn" onclick="openAdmin()">Admin Portal</button>
 
 <audio id="beep" src="https://www.soundjay.com/button/beep-07.wav"></audio>
 
@@ -109,8 +141,8 @@
 const canvas = document.getElementById("matrix");
 const ctx = canvas.getContext("2d");
 
-canvas.height = window.innerHeight;
 canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
 
 const letters = "01";
 const fontSize = 14;
@@ -119,40 +151,97 @@ const drops = Array(Math.floor(columns)).fill(1);
 
 function draw() {
   ctx.fillStyle = "rgba(0,0,0,0.05)";
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.fillRect(0,0,canvas.width,canvas.height);
 
   ctx.fillStyle = "#00ffcc";
   ctx.font = fontSize + "px monospace";
 
-  drops.forEach((y, i) => {
-    const text = letters[Math.floor(Math.random() * letters.length)];
-    ctx.fillText(text, i * fontSize, y * fontSize);
+  drops.forEach((y,i)=>{
+    const text = letters[Math.floor(Math.random()*letters.length)];
+    ctx.fillText(text,i*fontSize,y*fontSize);
 
-    if (y * fontSize > canvas.height && Math.random() > 0.975) {
-      drops[i] = 0;
-    }
-
+    if(y*fontSize > canvas.height && Math.random()>0.975) drops[i]=0;
     drops[i]++;
   });
 }
-setInterval(draw, 50);
+setInterval(draw,50);
 
-/* 🔥 FIXED ROUTES (REAL URL SYSTEM) */
+/* BOOT SEQUENCE */
+const bootText = [
+  "Booting system kernel...",
+  "Loading secure modules...",
+  "Establishing encrypted layer...",
+  "Scanning network nodes...",
+  "Firewall: ACTIVE",
+  "Access protocols loaded...",
+  "System ready."
+];
+
+let boot = document.getElementById("boot");
+let i = 0;
+
+function runBoot(){
+  if(i < bootText.length){
+    boot.innerText += bootText[i] + "\n";
+    i++;
+    setTimeout(runBoot, 650);
+  } else {
+    setTimeout(()=>{
+      boot.style.display = "none";
+      document.getElementById("login").style.display = "block";
+    }, 700);
+  }
+}
+
+runBoot();
+
+/* LOGIN */
+function login(){
+  const u = document.getElementById("user").value;
+  const p = document.getElementById("pass").value;
+
+  if(u === "admin" && p === "1918"){
+    document.getElementById("login").style.display = "none";
+    startLoading();
+  } else {
+    alert("ACCESS DENIED");
+  }
+}
+
+/* LOADING */
+function startLoading(){
+  document.getElementById("loading").style.display = "block";
+
+  let fill = document.getElementById("fill");
+  let w = 0;
+
+  let interval = setInterval(()=>{
+    w += 2;
+    fill.style.width = w + "%";
+
+    if(w >= 100){
+      clearInterval(interval);
+      document.getElementById("loading").style.display = "none";
+      document.getElementById("terminal").style.display = "block";
+    }
+  },40);
+}
+
+/* ROUTES */
 const routes = {
-  "2010": { name: "MultiMovies", url: "https://multimovies.fyi" },
-  "1111": { name: "Hacker AI", url: "https://hackerai.co/" },
-  "1212": { name: "NoteGPT", url: "https://notegpt.io" },
-  "1819": { name: "TBCPL", url: "https://tbcpl.lol/" },
-
-  // your custom ones
-  "2222": { name: "WhatsMyName", url: "https://whatsmyname.me/" },
-  "4111": { name: "FMHY", url: "https://fmhy.net/" },
-  "8787": { name: "Moewalls", url: "https://moewalls.com/" },
-  "4545": { name: "BugMeNot", url: "https://bugmenot.com/" }
+  "2010":"https://multimovies.fyi",
+  "1111":"https://hackerai.co/",
+  "1212":"https://notegpt.io",
+  "1819":"https://tbcpl.lol/",
+  "2222":"https://whatsmyname.me/",
+  "4111":"https://fmhy.net/",
+  "8787":"https://moewalls.com/",
+  "4545":"https://bugmenot.com/",
+  "9999":"https://drive.google.com/file/d/1Dquo4RZdefNapARHtKG7jgteNK9F7aCf/view?usp=drive_link"
 };
 
 /* TERMINAL */
-function go() {
+function go(){
   const code = document.getElementById("code").value;
   const status = document.getElementById("status");
   const beep = document.getElementById("beep");
@@ -160,58 +249,18 @@ function go() {
   beep.play();
   status.innerText = "ACCESSING...";
 
-  setTimeout(() => {
-    if (routes[code]) {
-      status.innerText = "ACCESS GRANTED 🚀";
+  setTimeout(()=>{
+    if(routes[code]){
+      status.innerText = "ACCESS GRANTED";
 
-      setTimeout(() => {
-        window.location.href = routes[code].url;
-      }, 900);
+      setTimeout(()=>{
+        window.open(routes[code], "_blank"); // 🔥 FIXED OPENING METHOD
+      },800);
 
     } else {
-      deny();
+      status.innerText = "ACCESS DENIED";
     }
-  }, 800);
-}
-
-function deny() {
-  const status = document.getElementById("status");
-  const container = document.querySelector(".container");
-
-  status.innerText = "ACCESS DENIED";
-  container.classList.add("shake");
-
-  setTimeout(() => {
-    container.classList.remove("shake");
-    status.innerText = "";
-  }, 800);
-}
-
-/* ADMIN PANEL */
-let adminVisible = false;
-
-function openAdmin() {
-  const pass = prompt("ENTER ADMIN PASSWORD");
-  const panel = document.getElementById("adminPanel");
-
-  if (pass === "1918") {
-
-    adminVisible = !adminVisible;
-    panel.style.display = adminVisible ? "block" : "none";
-
-    if (adminVisible) {
-      let content = "<h3>ADMIN ACCESS</h3>";
-
-      for (let code in routes) {
-        content += `<p><b>${code}</b> → ${routes[code].name}</p>`;
-      }
-
-      panel.innerHTML = content;
-    }
-
-  } else {
-    alert("ACCESS DENIED");
-  }
+  },700);
 }
 </script>
 
