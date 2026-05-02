@@ -63,6 +63,26 @@
       75% { transform: translateX(5px); }
       100% { transform: translateX(0); }
     }
+
+    #adminPanel {
+      display: none;
+      margin-top: 20px;
+      border: 1px solid #00ffcc;
+      padding: 15px;
+      width: 300px;
+      margin-left: auto;
+      margin-right: auto;
+      text-align: left;
+      box-shadow: 0 0 10px #00ffcc;
+    }
+
+    .admin-btn {
+      position: fixed;
+      bottom: 10px;
+      right: 10px;
+      font-size: 12px;
+      opacity: 0.6;
+    }
   </style>
 </head>
 
@@ -76,7 +96,11 @@
   <br>
   <button onclick="go()">EXECUTE</button>
   <div id="status"></div>
+
+  <div id="adminPanel"></div>
 </div>
+
+<button class="admin-btn" onclick="openAdmin()">Admin Portal</button>
 
 <audio id="beep" src="https://www.soundjay.com/button/beep-07.wav"></audio>
 
@@ -113,7 +137,15 @@ function draw() {
 }
 setInterval(draw, 50);
 
-/* TERMINAL LOGIC */
+/* VALID CODES */
+const routes = {
+  "2010": "MultiMovies → https://multimovies.fyi",
+  "1111": "Hacker AI → https://hackerai.co/",
+  "1212": "NoteGPT → https://notegpt.io",
+  "1819": "TBCPL → https://tbcpl.lol/"
+};
+
+/* TERMINAL */
 function go() {
   const code = document.getElementById("code").value;
   const status = document.getElementById("status");
@@ -122,11 +154,8 @@ function go() {
   beep.play();
   status.innerText = "ACCESSING...";
 
-  // valid codes (same as your backend)
-  const validCodes = ["2010", "1111", "1212", "1819"];
-
   setTimeout(() => {
-    if (validCodes.includes(code)) {
+    if (routes[code]) {
       status.innerText = "ACCESS GRANTED";
 
       setTimeout(() => {
@@ -150,6 +179,26 @@ function deny() {
     container.classList.remove("shake");
     status.innerText = "";
   }, 800);
+}
+
+/* ADMIN PORTAL */
+function openAdmin() {
+  const pass = prompt("ENTER ADMIN PASSWORD");
+
+  if (pass === "1918") {
+    const panel = document.getElementById("adminPanel");
+    panel.style.display = "block";
+
+    let content = "<h3>ADMIN ACCESS</h3>";
+
+    for (let code in routes) {
+      content += "<p><b>" + code + "</b> → " + routes[code] + "</p>";
+    }
+
+    panel.innerHTML = content;
+  } else {
+    alert("ACCESS DENIED");
+  }
 }
 </script>
 
