@@ -105,12 +105,12 @@
 <audio id="beep" src="https://www.soundjay.com/button/beep-07.wav"></audio>
 
 <script>
-/* MATRIX */
+/* MATRIX BACKGROUND */
 const canvas = document.getElementById("matrix");
 const ctx = canvas.getContext("2d");
 
-canvas.height = window.innerHeight;
 canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
 
 const letters = "01";
 const fontSize = 14;
@@ -137,14 +137,22 @@ function draw() {
 }
 setInterval(draw, 50);
 
-/* 🔥 FIXED ROUTES (REAL URL SYSTEM) */
+/* FIXED ROUTES (CONSISTENT FORMAT) */
 const routes = {
   "2010": { name: "MultiMovies", url: "https://multimovies.fyi" },
   "1111": { name: "Hacker AI", url: "https://hackerai.co/" },
   "1212": { name: "NoteGPT", url: "https://notegpt.io" },
   "1819": { name: "TBCPL", url: "https://tbcpl.lol/" },
-  "9999":"https://drive.google.com/file/d/1Dquo4RZdefNapARHtKG7jgteNK9F7aCf/view?usp=drive_link"
 
+  "2222": { name: "WhatsMyName", url: "https://whatsmyname.me/" },
+  "4111": { name: "FMHY", url: "https://fmhy.net/" },
+  "8787": { name: "Moewalls", url: "https://moewalls.com/" },
+  "4545": { name: "BugMeNot", url: "https://bugmenot.com/" },
+
+  "9999": { 
+    name: "Drive Vault",
+    url: "https://drive.google.com/file/d/1Dquo4RZdefNapARHtKG7jgteNK9F7aCf/view?usp=drive_link"
+  }
 };
 
 /* TERMINAL */
@@ -161,7 +169,7 @@ function go() {
       status.innerText = "ACCESS GRANTED 🚀";
 
       setTimeout(() => {
-        window.location.href = routes[code].url;
+        window.open(routes[code].url, "_blank"); // FIXED: reliable opening
       }, 900);
 
     } else {
