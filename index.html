@@ -24,12 +24,18 @@
       margin-top: 15%;
     }
 
+    h1 {
+      letter-spacing: 3px;
+      text-shadow: 0 0 10px #00ffcc;
+    }
+
     input {
       padding: 12px;
       background: transparent;
       border: 1px solid #00ffcc;
       color: #00ffcc;
       text-align: center;
+      outline: none;
     }
 
     button {
@@ -43,13 +49,39 @@
 
     #status {
       margin-top: 20px;
+      height: 20px;
+    }
+
+    .shake {
+      animation: shake 0.3s;
+    }
+
+    @keyframes shake {
+      0% { transform: translateX(-5px); }
+      25% { transform: translateX(5px); }
+      50% { transform: translateX(-5px); }
+      75% { transform: translateX(5px); }
+      100% { transform: translateX(0); }
     }
 
     #adminPanel {
       display: none;
       margin-top: 20px;
       border: 1px solid #00ffcc;
-      padding: 10px;
+      padding: 15px;
+      width: 300px;
+      margin-left: auto;
+      margin-right: auto;
+      text-align: left;
+      box-shadow: 0 0 10px #00ffcc;
+    }
+
+    .admin-btn {
+      position: fixed;
+      bottom: 10px;
+      right: 10px;
+      font-size: 12px;
+      opacity: 0.6;
     }
   </style>
 </head>
@@ -60,38 +92,66 @@
 
 <div class="container">
   <h1>ACCESS TERMINAL</h1>
-
   <input id="code" placeholder="ENTER CODE">
   <br>
   <button onclick="go()">EXECUTE</button>
-
   <div id="status"></div>
+
   <div id="adminPanel"></div>
 </div>
 
-<button onclick="openAdmin()" style="position:fixed;bottom:10px;right:10px;">Admin</button>
+<button class="admin-btn" onclick="openAdmin()">Admin Portal</button>
+
+<audio id="beep" src="https://www.soundjay.com/button/beep-07.wav"></audio>
 
 <script>
-/* ROUTES (FRONTEND) */
+/* MATRIX RAIN */
+const canvas = document.getElementById("matrix");
+const ctx = canvas.getContext("2d");
+
+canvas.height = window.innerHeight;
+canvas.width = window.innerWidth;
+
+const letters = "01";
+const fontSize = 14;
+const columns = canvas.width / fontSize;
+const drops = Array(Math.floor(columns)).fill(1);
+
+function draw() {
+  ctx.fillStyle = "rgba(0,0,0,0.05)";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  ctx.fillStyle = "#00ffcc";
+  ctx.font = fontSize + "px monospace";
+
+  drops.forEach((y, i) => {
+    const text = letters[Math.floor(Math.random() * letters.length)];
+    ctx.fillText(text, i * fontSize, y * fontSize);
+
+    if (y * fontSize > canvas.height && Math.random() > 0.975) {
+      drops[i] = 0;
+    }
+
+    drops[i]++;
+  });
+}
+setInterval(draw, 50);
+
+/* ROUTES */
 const routes = {
-  "2010": { label: "MultiMovies" },
-  "1111": { label: "Hacker AI" },
-  "1212": { label: "NoteGPT" },
-  "1819": { label: "TBCPL" },
-
-  "2222": { label: "WhatsMyName" },
-  "4111": { label: "FMHY" },
-  "8787": { label: "MoeWalls" },
-  "4545": { label: "BugMeNot" },
-  "3434": { label: "Instagram" },
-
-  "9999": { label: "My PDF" }
+  "2010": "MultiMovies → https://multimovies.fyi",
+  "1111": "Hacker AI → https://hackerai.co/",
+  "1212": "NoteGPT → https://notegpt.io",
+  "1819": "TBCPL → https://tbcpl.lol/"
 };
 
+/* TERMINAL */
 function go() {
   const code = document.getElementById("code").value;
   const status = document.getElementById("status");
+  const beep = document.getElementById("beep");
 
+  beep.play();
   status.innerText = "ACCESSING...";
 
   setTimeout(() => {
@@ -99,41 +159,52 @@ function go() {
       status.innerText = "ACCESS GRANTED";
 
       setTimeout(() => {
-        if (code === "9999") {
-          window.location.href = "/notes.pdf";
-        } else {
-          window.location.href = "/redirect?code=" + code;
-        }
-      }, 800);
+        window.location.href = "/redirect?code=" + code;
+      }, 1000);
 
     } else {
-      status.innerText = "ACCESS DENIED";
+      deny();
     }
+  }, 1000);
+}
+
+function deny() {
+  const status = document.getElementById("status");
+  const container = document.querySelector(".container");
+
+  status.innerText = "ACCESS DENIED";
+  container.classList.add("shake");
+
+  setTimeout(() => {
+    container.classList.remove("shake");
+    status.innerText = "";
   }, 800);
 }
 
-/* ADMIN */
+/* ADMIN TOGGLE */
 let adminVisible = false;
 
 function openAdmin() {
   const pass = prompt("ENTER ADMIN PASSWORD");
+  const panel = document.getElementById("adminPanel");
 
   if (pass === "1918") {
-    const panel = document.getElementById("adminPanel");
 
     if (adminVisible) {
       panel.style.display = "none";
       panel.innerHTML = "";
       adminVisible = false;
+
     } else {
       panel.style.display = "block";
 
-      let html = "<h3>ADMIN PANEL</h3>";
+      let content = "<h3>ADMIN ACCESS</h3>";
+
       for (let code in routes) {
-        html += "<p>" + code + " → " + routes[code].label + "</p>";
+        content += "<p><b>" + code + "</b> → " + routes[code] + "</p>";
       }
 
-      panel.innerHTML = html;
+      panel.innerHTML = content;
       adminVisible = true;
     }
 
