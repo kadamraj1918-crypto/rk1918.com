@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>ACCESS TERMINAL v3</title>
+  <title>ACCESS TERMINAL v2</title>
 
   <style>
     body {
@@ -19,7 +19,7 @@
       z-index: -1;
     }
 
-    /* BOOT */
+    /* BOOT SCREEN */
     #boot {
       position: absolute;
       width: 100%;
@@ -28,7 +28,7 @@
       white-space: pre-line;
     }
 
-    /* LOGIN */
+    /* LOGIN SCREEN */
     #login {
       display: none;
       text-align: center;
@@ -42,7 +42,6 @@
       color: #00ffcc;
       margin: 5px;
       text-align: center;
-      outline: none;
     }
 
     button {
@@ -51,7 +50,6 @@
       border: 1px solid #00ffcc;
       color: #00ffcc;
       cursor: pointer;
-      margin-top: 10px;
     }
 
     /* LOADING */
@@ -83,8 +81,7 @@
     }
 
     #status {
-      margin-top: 15px;
-      height: 20px;
+      margin-top: 20px;
     }
 
     #adminPanel {
@@ -93,8 +90,7 @@
       border: 1px solid #00ffcc;
       padding: 10px;
       width: 320px;
-      margin-left: auto;
-      margin-right: auto;
+      margin: auto;
       text-align: left;
     }
   </style>
@@ -137,7 +133,7 @@
 <audio id="beep" src="https://www.soundjay.com/button/beep-07.wav"></audio>
 
 <script>
-/* MATRIX */
+/* MATRIX BACKGROUND */
 const canvas = document.getElementById("matrix");
 const ctx = canvas.getContext("2d");
 
@@ -159,7 +155,6 @@ function draw() {
   drops.forEach((y,i)=>{
     const text = letters[Math.floor(Math.random()*letters.length)];
     ctx.fillText(text,i*fontSize,y*fontSize);
-
     if(y*fontSize > canvas.height && Math.random()>0.975) drops[i]=0;
     drops[i]++;
   });
@@ -168,28 +163,29 @@ setInterval(draw,50);
 
 /* BOOT SEQUENCE */
 const bootText = [
-  "Booting system kernel...",
-  "Loading secure modules...",
-  "Establishing encrypted layer...",
+  "Initializing system core...",
+  "Loading kernel modules...",
+  "Mounting secure layer...",
+  "Injecting encryption layer...",
   "Scanning network nodes...",
   "Firewall: ACTIVE",
-  "Access protocols loaded...",
-  "System ready."
+  "Security protocols: ENABLED",
+  "System ready..."
 ];
 
 let boot = document.getElementById("boot");
 let i = 0;
 
-function runBoot(){
+function runBoot() {
   if(i < bootText.length){
     boot.innerText += bootText[i] + "\n";
     i++;
-    setTimeout(runBoot, 650);
+    setTimeout(runBoot, 700);
   } else {
     setTimeout(()=>{
       boot.style.display = "none";
       document.getElementById("login").style.display = "block";
-    }, 700);
+    }, 800);
   }
 }
 
@@ -208,7 +204,7 @@ function login(){
   }
 }
 
-/* LOADING */
+/* LOADING BAR */
 function startLoading(){
   document.getElementById("loading").style.display = "block";
 
@@ -224,7 +220,7 @@ function startLoading(){
       document.getElementById("loading").style.display = "none";
       document.getElementById("terminal").style.display = "block";
     }
-  },40);
+  },50);
 }
 
 /* ROUTES */
@@ -233,10 +229,6 @@ const routes = {
   "1111":"https://hackerai.co/",
   "1212":"https://notegpt.io",
   "1819":"https://tbcpl.lol/",
-  "2222":"https://whatsmyname.me/",
-  "4111":"https://fmhy.net/",
-  "8787":"https://moewalls.com/",
-  "4545":"https://bugmenot.com/",
   "9999":"https://drive.google.com/file/d/1Dquo4RZdefNapARHtKG7jgteNK9F7aCf/view?usp=drive_link"
 };
 
@@ -252,15 +244,13 @@ function go(){
   setTimeout(()=>{
     if(routes[code]){
       status.innerText = "ACCESS GRANTED";
-
       setTimeout(()=>{
-        window.open(routes[code], "_blank"); // 🔥 FIXED OPENING METHOD
+        window.location.href = routes[code];
       },800);
-
     } else {
       status.innerText = "ACCESS DENIED";
     }
-  },700);
+  },800);
 }
 </script>
 
