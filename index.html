@@ -137,7 +137,7 @@ function draw() {
 }
 setInterval(draw, 50);
 
-/* VALID CODES */
+/* ROUTES */
 const routes = {
   "2010": "MultiMovies → https://multimovies.fyi",
   "1111": "Hacker AI → https://hackerai.co/",
@@ -181,21 +181,33 @@ function deny() {
   }, 800);
 }
 
-/* ADMIN PORTAL */
+/* ADMIN TOGGLE */
+let adminVisible = false;
+
 function openAdmin() {
   const pass = prompt("ENTER ADMIN PASSWORD");
+  const panel = document.getElementById("adminPanel");
 
   if (pass === "1918") {
-    const panel = document.getElementById("adminPanel");
-    panel.style.display = "block";
 
-    let content = "<h3>ADMIN ACCESS</h3>";
+    if (adminVisible) {
+      panel.style.display = "none";
+      panel.innerHTML = "";
+      adminVisible = false;
 
-    for (let code in routes) {
-      content += "<p><b>" + code + "</b> → " + routes[code] + "</p>";
+    } else {
+      panel.style.display = "block";
+
+      let content = "<h3>ADMIN ACCESS</h3>";
+
+      for (let code in routes) {
+        content += "<p><b>" + code + "</b> → " + routes[code] + "</p>";
+      }
+
+      panel.innerHTML = content;
+      adminVisible = true;
     }
 
-    panel.innerHTML = content;
   } else {
     alert("ACCESS DENIED");
   }
