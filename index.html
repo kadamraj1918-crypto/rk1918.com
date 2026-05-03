@@ -105,7 +105,6 @@
 /* MATRIX */
 const canvas = document.getElementById("matrix");
 const ctx = canvas.getContext("2d");
-
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
@@ -117,27 +116,28 @@ const drops = Array(Math.floor(columns)).fill(1);
 function draw() {
   ctx.fillStyle = "rgba(0,0,0,0.05)";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
-
   ctx.fillStyle = "#00ffcc";
   ctx.font = fontSize + "px monospace";
 
   drops.forEach((y, i) => {
     const text = letters[Math.floor(Math.random() * letters.length)];
     ctx.fillText(text, i * fontSize, y * fontSize);
-
-    if (y * fontSize > canvas.height && Math.random() > 0.975) {
-      drops[i] = 0;
-    }
-
+    if (y * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
     drops[i]++;
   });
 }
 setInterval(draw, 50);
 
-/* STORAGE */
-let routes = JSON.parse(localStorage.getItem("routes")) || {};
+/* ROUTES MERGE */
+const defaultRoutes = {
+  "2010": { name: "MultiMovies", url: "https://multimovies.fyi", desc: "Movies" },
+  "1111": { name: "Hacker AI", url: "https://hackerai.co/", desc: "AI tool" },
+  "1212": { name: "NoteGPT", url: "https://notegpt.io", desc: "Notes AI" }
+};
 
-/* TERMINAL */
+let savedRoutes = JSON.parse(localStorage.getItem("routes")) || {};
+let routes = { ...defaultRoutes, ...savedRoutes };
+
 function go() {
   const code = document.getElementById("code").value.trim();
   const status = document.getElementById("status");
@@ -155,11 +155,10 @@ function go() {
   }, 600);
 }
 
-/* ADMIN */
 function openAdmin() {
   if (prompt("PASSWORD") !== "1918") return alert("DENIED");
 
-  routes = JSON.parse(localStorage.getItem("routes")) || {};
+  routes = { ...defaultRoutes, ...(JSON.parse(localStorage.getItem("routes")) || {}) };
 
   let html = "<h3>DATABASE</h3>";
   for (let code in routes) {
@@ -171,17 +170,12 @@ function openAdmin() {
   panel.innerHTML = html;
 }
 
-/* OWNER FIXED */
 function openOwner() {
   const pass = prompt("ENTER OWNER PASSWORD");
 
   if (pass === "19181918") {
     const tab = window.open("owner.html", "_blank");
-
-    // fallback if popup blocked
-    if (!tab || tab.closed || typeof tab.closed === "undefined") {
-      window.location.href = "owner.html";
-    }
+    if (!tab || tab.closed) window.location.href = "owner.html";
   } else {
     alert("ACCESS DENIED");
   }
