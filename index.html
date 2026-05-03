@@ -30,18 +30,17 @@
     }
 
     input {
-      padding: 10px;
+      padding: 12px;
       background: transparent;
       border: 1px solid #00ffcc;
       color: #00ffcc;
-      outline: none;
-      margin: 5px;
       text-align: center;
+      outline: none;
     }
 
     button {
-      padding: 6px 12px;
-      margin: 3px;
+      margin-top: 20px;
+      padding: 10px 25px;
       background: transparent;
       border: 1px solid #00ffcc;
       color: #00ffcc;
@@ -53,40 +52,6 @@
       height: 20px;
     }
 
-    /* ✅ FIXED PANEL DIMENSIONS */
-    #adminPanel, #ownerPanel {
-      display: none;
-      margin-top: 20px;
-      border: 1px solid #00ffcc;
-      padding: 15px;
-      width: 320px;
-      max-height: 320px;
-      overflow-y: auto;
-      margin-left: auto;
-      margin-right: auto;
-      text-align: left;
-      box-shadow: 0 0 10px #00ffcc;
-      box-sizing: border-box;
-    }
-
-    /* ✅ FIX INPUT OVERFLOW */
-    #ownerPanel input {
-      width: 100%;
-      box-sizing: border-box;
-      margin: 5px 0;
-    }
-
-    /* ✅ CLEAN BUTTON SPACING */
-    #ownerPanel button {
-      margin: 3px 2px;
-    }
-
-    .admin-item {
-      border-bottom: 1px solid #00ffcc33;
-      padding: 6px 0;
-    }
-
-    /* CORNERS */
     .admin-btn {
       position: fixed;
       bottom: 10px;
@@ -99,6 +64,20 @@
       bottom: 10px;
       right: 10px;
       font-size: 12px;
+    }
+
+    #adminPanel {
+      display: none;
+      margin-top: 20px;
+      border: 1px solid #00ffcc;
+      padding: 15px;
+      width: 320px;
+      max-height: 320px;
+      overflow-y: auto;
+      margin-left: auto;
+      margin-right: auto;
+      text-align: left;
+      box-shadow: 0 0 10px #00ffcc;
     }
   </style>
 </head>
@@ -115,7 +94,6 @@
   <div id="status"></div>
 
   <div id="adminPanel"></div>
-  <div id="ownerPanel"></div>
 </div>
 
 <button class="admin-btn" onclick="openAdmin()">Admin</button>
@@ -150,16 +128,9 @@ function draw() {
 }
 setInterval(draw, 50);
 
-/* STORAGE */
-let routes = JSON.parse(localStorage.getItem("routes")) || {
-  "2010": { name: "MultiMovies", url: "https://multimovies.fyi", desc: "Movies" }
-};
+/* ROUTES */
+let routes = JSON.parse(localStorage.getItem("routes")) || {};
 
-function saveRoutes() {
-  localStorage.setItem("routes", JSON.stringify(routes));
-}
-
-/* TERMINAL */
 function go() {
   const code = document.getElementById("code").value.trim();
   const status = document.getElementById("status");
@@ -181,9 +152,11 @@ function go() {
 function openAdmin() {
   if (prompt("PASSWORD") !== "1918") return alert("DENIED");
 
+  routes = JSON.parse(localStorage.getItem("routes")) || {};
+
   let html = "<h3>DATABASE</h3>";
   for (let code in routes) {
-    html += `<div class="admin-item"><b>${code}</b> → ${routes[code].name}</div>`;
+    html += `<div><b>${code}</b> → ${routes[code].name}</div>`;
   }
 
   const panel = document.getElementById("adminPanel");
@@ -191,70 +164,15 @@ function openAdmin() {
   panel.innerHTML = html;
 }
 
-/* OWNER */
+/* OWNER → NEW PAGE */
 function openOwner() {
-  if (prompt("PASSWORD") !== "19181918") return alert("DENIED");
-  renderOwner();
-}
+  const pass = prompt("ENTER OWNER PASSWORD");
 
-function renderOwner() {
-  let html = `
-    <h3>OWNER PANEL</h3>
-
-    <input id="oCode" placeholder="Code">
-    <input id="oName" placeholder="Name">
-    <input id="oURL" placeholder="https://...">
-    <input id="oDesc" placeholder="Description">
-    <button onclick="addCode()">ADD</button>
-    <hr>
-  `;
-
-  for (let code in routes) {
-    html += `
-      <div class="admin-item">
-        <b>${code}</b> → ${routes[code].name}
-        <br>
-        <button onclick="editCode('${code}')">Edit</button>
-        <button onclick="deleteCode('${code}')">Delete</button>
-      </div>
-    `;
+  if (pass === "19181918") {
+    window.open("owner.html", "_blank");
+  } else {
+    alert("ACCESS DENIED");
   }
-
-  const panel = document.getElementById("ownerPanel");
-  panel.style.display = "block";
-  panel.innerHTML = html;
-}
-
-function addCode() {
-  const code = oCode.value.trim();
-  const name = oName.value;
-  const url = oURL.value.trim();
-  const desc = oDesc.value;
-
-  if (!code || !url) return alert("Required");
-
-  routes[code] = { name, url, desc };
-  saveRoutes();
-  renderOwner();
-}
-
-function deleteCode(code) {
-  if (!confirm("Delete this code?")) return;
-  delete routes[code];
-  saveRoutes();
-  renderOwner();
-}
-
-function editCode(code) {
-  const newName = prompt("New name:", routes[code].name);
-  const newURL = prompt("New URL:", routes[code].url);
-  const newDesc = prompt("New desc:", routes[code].desc);
-
-  if (!newURL) return;
-
-  routes[code] = { name: newName, url: newURL, desc: newDesc };
-  saveRoutes();
-  renderOwner();
 }
 </script>
 
