@@ -93,14 +93,13 @@
       opacity: 0.7;
     }
 
-    /* CENTERED BUTTON GROUP */
+    /* CORNER BUTTONS WITH EQUAL SPACING */
     .portal-buttons {
       position: fixed;
       bottom: 10px;
-      left: 50%;
-      transform: translateX(-50%);
+      right: 10px;
       display: flex;
-      gap: 20px;
+      gap: 10px; /* equal distance between buttons */
     }
 
     .portal-buttons button {
@@ -126,7 +125,7 @@
   <div id="ownerPanel"></div>
 </div>
 
-<!-- CENTERED BUTTONS -->
+<!-- CORNER BUTTON GROUP -->
 <div class="portal-buttons">
   <button onclick="openAdmin()">Admin Portal</button>
   <button onclick="openOwner()">Owner Portal</button>
