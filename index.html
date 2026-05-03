@@ -30,17 +30,19 @@
     }
 
     input {
-      padding: 12px;
+      padding: 10px;
       background: transparent;
       border: 1px solid #00ffcc;
       color: #00ffcc;
-      text-align: center;
       outline: none;
+      margin: 5px;
+      width: 85%;
+      text-align: center;
     }
 
     button {
-      margin-top: 20px;
-      padding: 10px 25px;
+      padding: 6px 12px;
+      margin: 3px;
       background: transparent;
       border: 1px solid #00ffcc;
       color: #00ffcc;
@@ -52,54 +54,30 @@
       height: 20px;
     }
 
-    .shake {
-      animation: shake 0.3s;
-    }
-
-    @keyframes shake {
-      0% { transform: translateX(-5px); }
-      25% { transform: translateX(5px); }
-      50% { transform: translateX(-5px); }
-      75% { transform: translateX(5px); }
-      100% { transform: translateX(0); }
-    }
-
     #adminPanel, #ownerPanel {
       display: none;
       margin-top: 20px;
       border: 1px solid #00ffcc;
       padding: 15px;
-      width: 350px;
+      width: 360px;
       margin-left: auto;
       margin-right: auto;
       text-align: left;
       box-shadow: 0 0 10px #00ffcc;
-      max-height: 300px;
+      max-height: 350px;
       overflow-y: auto;
     }
 
     .admin-item {
       border-bottom: 1px solid #00ffcc33;
-      padding: 8px 0;
+      padding: 6px 0;
     }
 
-    .admin-code {
-      color: #00ffff;
-      font-weight: bold;
-    }
-
-    .admin-desc {
-      font-size: 12px;
-      opacity: 0.7;
-    }
-
-    /* CORNERS */
     .admin-btn {
       position: fixed;
       bottom: 10px;
       left: 10px;
       font-size: 12px;
-      opacity: 0.7;
     }
 
     .owner-btn {
@@ -107,7 +85,6 @@
       bottom: 10px;
       right: 10px;
       font-size: 12px;
-      opacity: 0.7;
     }
   </style>
 </head>
@@ -127,8 +104,8 @@
   <div id="ownerPanel"></div>
 </div>
 
-<button class="admin-btn" onclick="openAdmin()">Admin Portal</button>
-<button class="owner-btn" onclick="openOwner()">Owner Portal</button>
+<button class="admin-btn" onclick="openAdmin()">Admin</button>
+<button class="owner-btn" onclick="openOwner()">Owner</button>
 
 <audio id="beep" src="https://www.soundjay.com/button/beep-07.wav"></audio>
 
@@ -136,7 +113,6 @@
 /* MATRIX */
 const canvas = document.getElementById("matrix");
 const ctx = canvas.getContext("2d");
-
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
@@ -148,27 +124,21 @@ const drops = Array(Math.floor(columns)).fill(1);
 function draw() {
   ctx.fillStyle = "rgba(0,0,0,0.05)";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
-
   ctx.fillStyle = "#00ffcc";
   ctx.font = fontSize + "px monospace";
 
   drops.forEach((y, i) => {
     const text = letters[Math.floor(Math.random() * letters.length)];
     ctx.fillText(text, i * fontSize, y * fontSize);
-
-    if (y * fontSize > canvas.height && Math.random() > 0.975) {
-      drops[i] = 0;
-    }
-
+    if (y * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
     drops[i]++;
   });
 }
 setInterval(draw, 50);
 
-/* ROUTES WITH STORAGE */
+/* STORAGE */
 let routes = JSON.parse(localStorage.getItem("routes")) || {
-  "2010": { name: "MultiMovies", url: "https://multimovies.fyi", desc: "Movie streaming (free HD)" },
-  "1111": { name: "Hacker AI", url: "https://hackerai.co/", desc: "AI chatbot tool" }
+  "2010": { name: "MultiMovies", url: "https://multimovies.fyi", desc: "Movies" }
 };
 
 function saveRoutes() {
@@ -186,91 +156,92 @@ function go() {
   setTimeout(() => {
     if (routes[code]) {
       status.innerText = "ACCESS GRANTED 🚀";
-      setTimeout(() => window.open(routes[code].url, "_blank"), 900);
+      setTimeout(() => window.open(routes[code].url, "_blank"), 800);
     } else {
-      deny();
+      status.innerText = "ACCESS DENIED";
     }
-  }, 800);
-}
-
-function deny() {
-  const status = document.getElementById("status");
-  const container = document.querySelector(".container");
-
-  status.innerText = "ACCESS DENIED";
-  container.classList.add("shake");
-
-  setTimeout(() => {
-    container.classList.remove("shake");
-    status.innerText = "";
-  }, 800);
+  }, 600);
 }
 
 /* ADMIN */
 function openAdmin() {
-  const pass = prompt("ENTER ADMIN PASSWORD");
-  const panel = document.getElementById("adminPanel");
+  if (prompt("PASSWORD") !== "1918") return alert("DENIED");
 
-  if (pass === "1918") {
-    panel.style.display = panel.style.display === "block" ? "none" : "block";
-
-    let content = "<h3>ADMIN DATABASE</h3>";
-    for (let code in routes) {
-      content += `
-        <div class="admin-item">
-          <div class="admin-code">${code}</div>
-          <div>${routes[code].name}</div>
-          <div class="admin-desc">${routes[code].desc}</div>
-        </div>
-      `;
-    }
-    panel.innerHTML = content;
-  } else {
-    alert("ACCESS DENIED");
+  let html = "<h3>DATABASE</h3>";
+  for (let code in routes) {
+    html += `<div class="admin-item"><b>${code}</b> → ${routes[code].name}</div>`;
   }
+
+  const panel = document.getElementById("adminPanel");
+  panel.style.display = panel.style.display === "block" ? "none" : "block";
+  panel.innerHTML = html;
 }
 
 /* OWNER */
 function openOwner() {
-  const pass = prompt("ENTER OWNER PASSWORD");
-  const panel = document.getElementById("ownerPanel");
+  if (prompt("PASSWORD") !== "19181918") return alert("DENIED");
 
-  if (pass === "19181918") {
-    panel.style.display = panel.style.display === "block" ? "none" : "block";
+  renderOwner();
+}
 
-    panel.innerHTML = `
-      <h3>OWNER CONTROL</h3>
-      <input id="oCode" placeholder="Code">
-      <input id="oName" placeholder="Website Name">
-      <input id="oURL" placeholder="https://example.com">
-      <input id="oDesc" placeholder="Description">
-      <button onclick="addCode()">ADD</button>
+function renderOwner() {
+  let html = `
+    <h3>OWNER PANEL</h3>
+
+    <input id="oCode" placeholder="Code">
+    <input id="oName" placeholder="Name">
+    <input id="oURL" placeholder="https://...">
+    <input id="oDesc" placeholder="Description">
+    <button onclick="addCode()">ADD</button>
+    <hr>
+  `;
+
+  for (let code in routes) {
+    html += `
+      <div class="admin-item">
+        <b>${code}</b> → ${routes[code].name}
+        <br>
+        <button onclick="editCode('${code}')">Edit</button>
+        <button onclick="deleteCode('${code}')">Delete</button>
+      </div>
     `;
-  } else {
-    alert("ACCESS DENIED");
   }
+
+  const panel = document.getElementById("ownerPanel");
+  panel.style.display = "block";
+  panel.innerHTML = html;
 }
 
 function addCode() {
-  const code = document.getElementById("oCode").value.trim();
-  const name = document.getElementById("oName").value;
-  const url = document.getElementById("oURL").value.trim();
-  const desc = document.getElementById("oDesc").value;
+  const code = oCode.value.trim();
+  const name = oName.value;
+  const url = oURL.value.trim();
+  const desc = oDesc.value;
 
-  if (!code || !url) {
-    alert("Code & URL required");
-    return;
-  }
-
-  if (!url.startsWith("http")) {
-    alert("URL must start with https://");
-    return;
-  }
+  if (!code || !url) return alert("Required");
 
   routes[code] = { name, url, desc };
   saveRoutes();
+  renderOwner();
+}
 
-  alert("Code Added & Saved ✅");
+function deleteCode(code) {
+  if (!confirm("Delete this code?")) return;
+  delete routes[code];
+  saveRoutes();
+  renderOwner();
+}
+
+function editCode(code) {
+  const newName = prompt("New name:", routes[code].name);
+  const newURL = prompt("New URL:", routes[code].url);
+  const newDesc = prompt("New desc:", routes[code].desc);
+
+  if (!newURL) return;
+
+  routes[code] = { name: newName, url: newURL, desc: newDesc };
+  saveRoutes();
+  renderOwner();
 }
 </script>
 
