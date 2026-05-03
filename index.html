@@ -69,11 +69,32 @@
       margin-top: 20px;
       border: 1px solid #00ffcc;
       padding: 15px;
-      width: 320px;
+      width: 350px;
       margin-left: auto;
       margin-right: auto;
       text-align: left;
       box-shadow: 0 0 10px #00ffcc;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    .admin-item {
+      border-bottom: 1px solid #00ffcc33;
+      padding: 8px 0;
+    }
+
+    .admin-code {
+      color: #00ffff;
+      font-weight: bold;
+    }
+
+    .admin-name {
+      font-size: 14px;
+    }
+
+    .admin-desc {
+      font-size: 12px;
+      opacity: 0.7;
     }
 
     .admin-btn {
@@ -137,23 +158,20 @@ function draw() {
 }
 setInterval(draw, 50);
 
-/* FIXED ROUTES (CONSISTENT FORMAT) */
+/* ROUTES WITH INFO */
 const routes = {
-  "2010": { name: "MultiMovies", url: "https://multimovies.fyi" },
-  "1111": { name: "Hacker AI", url: "https://hackerai.co/" },
-  "1212": { name: "NoteGPT", url: "https://notegpt.io" },
-  "1819": { name: "TBCPL", url: "https://tbcpl.lol/" },
+  "2010": { name: "MultiMovies", url: "https://multimovies.fyi", desc: "Movie streaming website (free HD content)" },
+  "1111": { name: "Hacker AI", url: "https://hackerai.co/", desc: "AI chatbot & hacking-style assistant tool" },
+  "1212": { name: "NoteGPT", url: "https://notegpt.io", desc: "AI notes summarizer & productivity tool" },
+  "1819": { name: "TBCPL", url: "https://tbcpl.lol/", desc: "Online library & digital resources" },
 
-  "2222": { name: "WhatsMyName", url: "https://whatsmyname.me/" },
-  "4111": { name: "FMHY", url: "https://fmhy.net/" },
-  "8787": { name: "Moewalls", url: "https://moewalls.com/" },
-  "4545": { name: "BugMeNot", url: "https://bugmenot.com/" },
-  "7777": { name: "eleven labs", url: "https://elevenlabs.io/app/speech-to-text" },
+  "2222": { name: "WhatsMyName", url: "https://whatsmyname.me/", desc: "Username search across social platforms" },
+  "4111": { name: "FMHY", url: "https://fmhy.net/", desc: "Huge collection of free tools & resources" },
+  "8787": { name: "Moewalls", url: "https://moewalls.com/", desc: "Live wallpapers for desktop" },
+  "4545": { name: "BugMeNot", url: "https://bugmenot.com/", desc: "Shared logins for websites" },
+  "7777": { name: "ElevenLabs", url: "https://elevenlabs.io/app/speech-to-text", desc: "AI voice & speech tools" },
 
-  "9999": { 
-    name: "Drive Vault",
-    url: "https://drive.google.com/file/d/1Dquo4RZdefNapARHtKG7jgteNK9F7aCf/view?usp=drive_link"
-  }
+  "9999": { name: "Drive Vault", url: "https://drive.google.com/file/d/1Dquo4RZdefNapARHtKG7jgteNK9F7aCf/view?usp=drive_link", desc: "Private Google Drive storage file" }
 };
 
 /* TERMINAL */
@@ -170,7 +188,7 @@ function go() {
       status.innerText = "ACCESS GRANTED 🚀";
 
       setTimeout(() => {
-        window.open(routes[code].url, "_blank"); // FIXED: reliable opening
+        window.open(routes[code].url, "_blank");
       }, 900);
 
     } else {
@@ -205,10 +223,16 @@ function openAdmin() {
     panel.style.display = adminVisible ? "block" : "none";
 
     if (adminVisible) {
-      let content = "<h3>ADMIN ACCESS</h3>";
+      let content = "<h3>ADMIN DATABASE</h3>";
 
       for (let code in routes) {
-        content += `<p><b>${code}</b> → ${routes[code].name}</p>`;
+        content += `
+          <div class="admin-item">
+            <div class="admin-code">${code}</div>
+            <div class="admin-name">${routes[code].name}</div>
+            <div class="admin-desc">${routes[code].desc}</div>
+          </div>
+        `;
       }
 
       panel.innerHTML = content;
