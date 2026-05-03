@@ -52,32 +52,57 @@
       height: 20px;
     }
 
+    .shake {
+      animation: shake 0.3s;
+    }
+
+    @keyframes shake {
+      0% { transform: translateX(-5px); }
+      25% { transform: translateX(5px); }
+      50% { transform: translateX(-5px); }
+      75% { transform: translateX(5px); }
+      100% { transform: translateX(0); }
+    }
+
     #adminPanel {
       display: none;
       margin-top: 20px;
       border: 1px solid #00ffcc;
       padding: 15px;
-      width: 320px;
-      max-height: 320px;
-      overflow-y: auto;
+      width: 350px;
       margin-left: auto;
       margin-right: auto;
       text-align: left;
       box-shadow: 0 0 10px #00ffcc;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    .admin-item {
+      border-bottom: 1px solid #00ffcc33;
+      padding: 8px 0;
+    }
+
+    .admin-code {
+      color: #00ffff;
+      font-weight: bold;
+    }
+
+    .admin-name {
+      font-size: 14px;
+    }
+
+    .admin-desc {
+      font-size: 12px;
+      opacity: 0.7;
     }
 
     .admin-btn {
       position: fixed;
       bottom: 10px;
-      left: 10px;
-      font-size: 12px;
-    }
-
-    .owner-btn {
-      position: fixed;
-      bottom: 10px;
       right: 10px;
       font-size: 12px;
+      opacity: 0.6;
     }
   </style>
 </head>
@@ -96,15 +121,15 @@
   <div id="adminPanel"></div>
 </div>
 
-<button class="admin-btn" onclick="openAdmin()">Admin</button>
-<button class="owner-btn" onclick="openOwner()">Owner</button>
+<button class="admin-btn" onclick="openAdmin()">Admin Portal</button>
 
 <audio id="beep" src="https://www.soundjay.com/button/beep-07.wav"></audio>
 
 <script>
-/* MATRIX */
+/* MATRIX BACKGROUND */
 const canvas = document.getElementById("matrix");
 const ctx = canvas.getContext("2d");
+
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
@@ -116,66 +141,103 @@ const drops = Array(Math.floor(columns)).fill(1);
 function draw() {
   ctx.fillStyle = "rgba(0,0,0,0.05)";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
+
   ctx.fillStyle = "#00ffcc";
   ctx.font = fontSize + "px monospace";
 
   drops.forEach((y, i) => {
     const text = letters[Math.floor(Math.random() * letters.length)];
     ctx.fillText(text, i * fontSize, y * fontSize);
-    if (y * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+
+    if (y * fontSize > canvas.height && Math.random() > 0.975) {
+      drops[i] = 0;
+    }
+
     drops[i]++;
   });
 }
 setInterval(draw, 50);
 
-/* ROUTES MERGE */
-const defaultRoutes = {
-  "2010": { name: "MultiMovies", url: "https://multimovies.fyi", desc: "Movies" },
-  "1111": { name: "Hacker AI", url: "https://hackerai.co/", desc: "AI tool" },
-  "1212": { name: "NoteGPT", url: "https://notegpt.io", desc: "Notes AI" }
+/* ROUTES WITH INFO */
+const routes = {
+  "2010": { name: "MultiMovies", url: "https://multimovies.fyi", desc: "Movie streaming website (free HD content)" },
+  "1111": { name: "Hacker AI", url: "https://hackerai.co/", desc: "AI chatbot & hacking-style assistant tool" },
+  "1212": { name: "NoteGPT", url: "https://notegpt.io", desc: "AI notes summarizer & productivity tool" },
+  "1819": { name: "TBCPL", url: "https://tbcpl.lol/", desc: "Online library & digital resources" },
+
+  "2222": { name: "WhatsMyName", url: "https://whatsmyname.me/", desc: "Username search across social platforms" },
+  "4111": { name: "FMHY", url: "https://fmhy.net/", desc: "Huge collection of free tools & resources" },
+  "8787": { name: "Moewalls", url: "https://moewalls.com/", desc: "Live wallpapers for desktop" },
+  "4545": { name: "BugMeNot", url: "https://bugmenot.com/", desc: "Shared logins for websites" },
+  "7777": { name: "ElevenLabs", url: "https://elevenlabs.io/app/speech-to-text", desc: "AI voice & speech tools" },
+
+  "9999": { name: "Drive Vault", url: "https://drive.google.com/file/d/1Dquo4RZdefNapARHtKG7jgteNK9F7aCf/view?usp=drive_link", desc: "Private Google Drive storage file" }
 };
 
-let savedRoutes = JSON.parse(localStorage.getItem("routes")) || {};
-let routes = { ...defaultRoutes, ...savedRoutes };
-
+/* TERMINAL */
 function go() {
-  const code = document.getElementById("code").value.trim();
+  const code = document.getElementById("code").value;
   const status = document.getElementById("status");
-  document.getElementById("beep").play();
+  const beep = document.getElementById("beep");
 
+  beep.play();
   status.innerText = "ACCESSING...";
 
   setTimeout(() => {
     if (routes[code]) {
       status.innerText = "ACCESS GRANTED 🚀";
-      setTimeout(() => window.open(routes[code].url, "_blank"), 800);
+
+      setTimeout(() => {
+        window.open(routes[code].url, "_blank");
+      }, 900);
+
     } else {
-      status.innerText = "ACCESS DENIED";
+      deny();
     }
-  }, 600);
+  }, 800);
 }
+
+function deny() {
+  const status = document.getElementById("status");
+  const container = document.querySelector(".container");
+
+  status.innerText = "ACCESS DENIED";
+  container.classList.add("shake");
+
+  setTimeout(() => {
+    container.classList.remove("shake");
+    status.innerText = "";
+  }, 800);
+}
+
+/* ADMIN PANEL */
+let adminVisible = false;
 
 function openAdmin() {
-  if (prompt("PASSWORD") !== "1918") return alert("DENIED");
-
-  routes = { ...defaultRoutes, ...(JSON.parse(localStorage.getItem("routes")) || {}) };
-
-  let html = "<h3>DATABASE</h3>";
-  for (let code in routes) {
-    html += `<div><b>${code}</b> → ${routes[code].name}</div>`;
-  }
-
+  const pass = prompt("ENTER ADMIN PASSWORD");
   const panel = document.getElementById("adminPanel");
-  panel.style.display = panel.style.display === "block" ? "none" : "block";
-  panel.innerHTML = html;
-}
 
-function openOwner() {
-  const pass = prompt("ENTER OWNER PASSWORD");
+  if (pass === "1918") {
 
-  if (pass === "19181918") {
-    const tab = window.open("owner.html", "_blank");
-    if (!tab || tab.closed) window.location.href = "owner.html";
+    adminVisible = !adminVisible;
+    panel.style.display = adminVisible ? "block" : "none";
+
+    if (adminVisible) {
+      let content = "<h3>ADMIN DATABASE</h3>";
+
+      for (let code in routes) {
+        content += `
+          <div class="admin-item">
+            <div class="admin-code">${code}</div>
+            <div class="admin-name">${routes[code].name}</div>
+            <div class="admin-desc">${routes[code].desc}</div>
+          </div>
+        `;
+      }
+
+      panel.innerHTML = content;
+    }
+
   } else {
     alert("ACCESS DENIED");
   }
