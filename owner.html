@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>OWNER CONTROL</title>
+
+  <style>
+    body {
+      background: black;
+      color: #00ffcc;
+      font-family: monospace;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      text-shadow: 0 0 10px #00ffcc;
+    }
+
+    .box {
+      max-width: 500px;
+      margin: auto;
+      border: 1px solid #00ffcc;
+      padding: 15px;
+      box-shadow: 0 0 10px #00ffcc;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 5px 0;
+      background: transparent;
+      border: 1px solid #00ffcc;
+      color: #00ffcc;
+    }
+
+    button {
+      margin: 5px 3px;
+      padding: 6px 12px;
+      background: transparent;
+      border: 1px solid #00ffcc;
+      color: #00ffcc;
+      cursor: pointer;
+    }
+
+    .item {
+      border-bottom: 1px solid #00ffcc33;
+      padding: 8px 0;
+    }
+  </style>
+</head>
+
+<body>
+
+<h1>OWNER CONTROL PANEL</h1>
+
+<div class="box">
+
+  <input id="code" placeholder="Code">
+  <input id="name" placeholder="Website Name">
+  <input id="url" placeholder="https://...">
+  <input id="desc" placeholder="Description">
+
+  <button onclick="addCode()">ADD CODE</button>
+
+  <hr>
+
+  <div id="list"></div>
+
+</div>
+
+<script>
+let routes = JSON.parse(localStorage.getItem("routes")) || {};
+
+function save() {
+  localStorage.setItem("routes", JSON.stringify(routes));
+}
+
+function render() {
+  let html = "";
+
+  for (let code in routes) {
+    html += `
+      <div class="item">
+        <b>${code}</b> → ${routes[code].name}
+        <br>
+        <button onclick="editCode('${code}')">Edit</button>
+        <button onclick="deleteCode('${code}')">Delete</button>
+      </div>
+    `;
+  }
+
+  document.getElementById("list").innerHTML = html;
+}
+
+function addCode() {
+  const code = document.getElementById("code").value.trim();
+  const name = document.getElementById("name").value;
+  const url = document.getElementById("url").value.trim();
+  const desc = document.getElementById("desc").value;
+
+  if (!code || !url) return alert("Code & URL required");
+
+  if (!url.startsWith("http")) {
+    return alert("Use full URL (https://...)");
+  }
+
+  routes[code] = { name, url, desc };
+  save();
+  render();
+}
+
+function deleteCode(code) {
+  if (!confirm("Delete?")) return;
+  delete routes[code];
+  save();
+  render();
+}
+
+function editCode(code) {
+  const newName = prompt("Name:", routes[code].name);
+  const newURL = prompt("URL:", routes[code].url);
+  const newDesc = prompt("Desc:", routes[code].desc);
+
+  if (!newURL) return;
+
+  routes[code] = { name: newName, url: newURL, desc: newDesc };
+  save();
+  render();
+}
+
+render();
+</script>
+
+</body>
+</html>
