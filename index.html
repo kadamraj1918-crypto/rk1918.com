@@ -93,19 +93,21 @@
       opacity: 0.7;
     }
 
-    /* CORNER BUTTONS WITH EQUAL SPACING */
-    .portal-buttons {
+    /* CORNER POSITIONS */
+    .admin-btn {
+      position: fixed;
+      bottom: 10px;
+      left: 10px;
+      font-size: 12px;
+      opacity: 0.7;
+    }
+
+    .owner-btn {
       position: fixed;
       bottom: 10px;
       right: 10px;
-      display: flex;
-      gap: 10px; /* equal distance between buttons */
-    }
-
-    .portal-buttons button {
       font-size: 12px;
       opacity: 0.7;
-      padding: 8px 18px;
     }
   </style>
 </head>
@@ -125,11 +127,9 @@
   <div id="ownerPanel"></div>
 </div>
 
-<!-- CORNER BUTTON GROUP -->
-<div class="portal-buttons">
-  <button onclick="openAdmin()">Admin Portal</button>
-  <button onclick="openOwner()">Owner Portal</button>
-</div>
+<!-- OPPOSITE CORNERS -->
+<button class="admin-btn" onclick="openAdmin()">Admin Portal</button>
+<button class="owner-btn" onclick="openOwner()">Owner Portal</button>
 
 <audio id="beep" src="https://www.soundjay.com/button/beep-07.wav"></audio>
 
