@@ -30,17 +30,19 @@
     }
 
     input {
-      padding: 12px;
+      padding: 10px;
       background: transparent;
       border: 1px solid #00ffcc;
       color: #00ffcc;
-      text-align: center;
       outline: none;
+      margin: 5px;
+      width: 85%;
+      text-align: center;
     }
 
     button {
-      margin-top: 20px;
-      padding: 10px 25px;
+      margin-top: 10px;
+      padding: 8px 20px;
       background: transparent;
       border: 1px solid #00ffcc;
       color: #00ffcc;
@@ -52,29 +54,17 @@
       height: 20px;
     }
 
-    .shake {
-      animation: shake 0.3s;
-    }
-
-    @keyframes shake {
-      0% { transform: translateX(-5px); }
-      25% { transform: translateX(5px); }
-      50% { transform: translateX(-5px); }
-      75% { transform: translateX(5px); }
-      100% { transform: translateX(0); }
-    }
-
-    #adminPanel {
+    #adminPanel, #ownerPanel {
       display: none;
       margin-top: 20px;
       border: 1px solid #00ffcc;
       padding: 15px;
-      width: 350px;
+      width: 360px;
       margin-left: auto;
       margin-right: auto;
       text-align: left;
       box-shadow: 0 0 10px #00ffcc;
-      max-height: 300px;
+      max-height: 350px;
       overflow-y: auto;
     }
 
@@ -83,27 +73,15 @@
       padding: 8px 0;
     }
 
-    .admin-code {
-      color: #00ffff;
-      font-weight: bold;
-    }
-
-    .admin-name {
-      font-size: 14px;
-    }
-
-    .admin-desc {
-      font-size: 12px;
-      opacity: 0.7;
-    }
-
-    .admin-btn {
+    .admin-btn, .owner-btn {
       position: fixed;
       bottom: 10px;
-      right: 10px;
       font-size: 12px;
       opacity: 0.6;
     }
+
+    .admin-btn { right: 10px; }
+    .owner-btn { right: 110px; }
   </style>
 </head>
 
@@ -119,17 +97,18 @@
   <div id="status"></div>
 
   <div id="adminPanel"></div>
+  <div id="ownerPanel"></div>
 </div>
 
-<button class="admin-btn" onclick="openAdmin()">Admin Portal</button>
+<button class="admin-btn" onclick="openAdmin()">Admin</button>
+<button class="owner-btn" onclick="openOwner()">Owner</button>
 
 <audio id="beep" src="https://www.soundjay.com/button/beep-07.wav"></audio>
 
 <script>
-/* MATRIX BACKGROUND */
+/* MATRIX */
 const canvas = document.getElementById("matrix");
 const ctx = canvas.getContext("2d");
-
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
@@ -141,106 +120,108 @@ const drops = Array(Math.floor(columns)).fill(1);
 function draw() {
   ctx.fillStyle = "rgba(0,0,0,0.05)";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
-
   ctx.fillStyle = "#00ffcc";
   ctx.font = fontSize + "px monospace";
 
   drops.forEach((y, i) => {
     const text = letters[Math.floor(Math.random() * letters.length)];
     ctx.fillText(text, i * fontSize, y * fontSize);
-
-    if (y * fontSize > canvas.height && Math.random() > 0.975) {
-      drops[i] = 0;
-    }
-
+    if (y * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
     drops[i]++;
   });
 }
 setInterval(draw, 50);
 
-/* ROUTES WITH INFO */
-const routes = {
-  "2010": { name: "MultiMovies", url: "https://multimovies.fyi", desc: "Movie streaming website (free HD content)" },
-  "1111": { name: "Hacker AI", url: "https://hackerai.co/", desc: "AI chatbot & hacking-style assistant tool" },
-  "1212": { name: "NoteGPT", url: "https://notegpt.io", desc: "AI notes summarizer & productivity tool" },
-  "1819": { name: "TBCPL", url: "https://tbcpl.lol/", desc: "Online library & digital resources" },
-
-  "2222": { name: "WhatsMyName", url: "https://whatsmyname.me/", desc: "Username search across social platforms" },
-  "4111": { name: "FMHY", url: "https://fmhy.net/", desc: "Huge collection of free tools & resources" },
-  "8787": { name: "Moewalls", url: "https://moewalls.com/", desc: "Live wallpapers for desktop" },
-  "4545": { name: "BugMeNot", url: "https://bugmenot.com/", desc: "Shared logins for websites" },
-  "7777": { name: "ElevenLabs", url: "https://elevenlabs.io/app/speech-to-text", desc: "AI voice & speech tools" },
-
-  "9999": { name: "Drive Vault", url: "https://drive.google.com/file/d/1Dquo4RZdefNapARHtKG7jgteNK9F7aCf/view?usp=drive_link", desc: "Private Google Drive storage file" }
+/* LOAD ROUTES */
+let routes = JSON.parse(localStorage.getItem("routes")) || {
+  "2010": { name: "MultiMovies", url: "https://multimovies.fyi", desc: "Movie streaming" }
 };
+
+function saveRoutes() {
+  localStorage.setItem("routes", JSON.stringify(routes));
+}
 
 /* TERMINAL */
 function go() {
   const code = document.getElementById("code").value;
   const status = document.getElementById("status");
-  const beep = document.getElementById("beep");
+  document.getElementById("beep").play();
 
-  beep.play();
   status.innerText = "ACCESSING...";
 
   setTimeout(() => {
     if (routes[code]) {
       status.innerText = "ACCESS GRANTED 🚀";
-
-      setTimeout(() => {
-        window.open(routes[code].url, "_blank");
-      }, 900);
-
+      setTimeout(() => window.open(routes[code].url, "_blank"), 800);
     } else {
-      deny();
+      status.innerText = "ACCESS DENIED";
     }
-  }, 800);
+  }, 600);
 }
 
-function deny() {
-  const status = document.getElementById("status");
-  const container = document.querySelector(".container");
-
-  status.innerText = "ACCESS DENIED";
-  container.classList.add("shake");
-
-  setTimeout(() => {
-    container.classList.remove("shake");
-    status.innerText = "";
-  }, 800);
-}
-
-/* ADMIN PANEL */
-let adminVisible = false;
-
+/* ADMIN VIEW */
 function openAdmin() {
   const pass = prompt("ENTER ADMIN PASSWORD");
+  if (pass !== "1918") return alert("ACCESS DENIED");
+
   const panel = document.getElementById("adminPanel");
+  panel.style.display = panel.style.display === "block" ? "none" : "block";
 
-  if (pass === "1918") {
-
-    adminVisible = !adminVisible;
-    panel.style.display = adminVisible ? "block" : "none";
-
-    if (adminVisible) {
-      let content = "<h3>ADMIN DATABASE</h3>";
-
-      for (let code in routes) {
-        content += `
-          <div class="admin-item">
-            <div class="admin-code">${code}</div>
-            <div class="admin-name">${routes[code].name}</div>
-            <div class="admin-desc">${routes[code].desc}</div>
-          </div>
-        `;
-      }
-
-      panel.innerHTML = content;
-    }
-
-  } else {
-    alert("ACCESS DENIED");
+  let html = "<h3>ADMIN DATABASE</h3>";
+  for (let code in routes) {
+    html += `
+      <div class="admin-item">
+        <b>${code}</b> → ${routes[code].name}
+        <br><small>${routes[code].desc}</small>
+      </div>
+    `;
   }
+  panel.innerHTML = html;
+}
+
+/* OWNER PORTAL */
+function openOwner() {
+  const pass = prompt("ENTER OWNER PASSWORD");
+  if (pass !== "19181918") return alert("ACCESS DENIED");
+
+  const panel = document.getElementById("ownerPanel");
+  panel.style.display = panel.style.display === "block" ? "none" : "block";
+
+  panel.innerHTML = `
+    <h3>OWNER CONTROL</h3>
+
+    <input id="oCode" placeholder="Code (e.g. 5555)">
+    <input id="oName" placeholder="Website Name">
+    <input id="oURL" placeholder="https://example.com">
+    <input id="oDesc" placeholder="Description">
+
+    <button onclick="addCode()">ADD CODE</button>
+    <hr>
+    <div id="ownerList"></div>
+  `;
+
+  renderOwnerList();
+}
+
+function renderOwnerList() {
+  let html = "";
+  for (let code in routes) {
+    html += `<div class="admin-item"><b>${code}</b> → ${routes[code].name}</div>`;
+  }
+  document.getElementById("ownerList").innerHTML = html;
+}
+
+function addCode() {
+  const code = document.getElementById("oCode").value;
+  const name = document.getElementById("oName").value;
+  const url = document.getElementById("oURL").value;
+  const desc = document.getElementById("oDesc").value;
+
+  if (!code || !url) return alert("Code & URL required");
+
+  routes[code] = { name, url, desc };
+  saveRoutes();
+  renderOwnerList();
 }
 </script>
 
