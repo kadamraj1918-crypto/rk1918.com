@@ -64,7 +64,7 @@
       100% { transform: translateX(0); }
     }
 
-    #adminPanel {
+    #adminPanel, #ownerPanel {
       display: none;
       margin-top: 20px;
       border: 1px solid #00ffcc;
@@ -88,42 +88,25 @@
       font-weight: bold;
     }
 
-    .admin-name {
-      font-size: 14px;
-    }
-
     .admin-desc {
       font-size: 12px;
       opacity: 0.7;
     }
 
-    .admin-btn {
+    /* CENTERED BUTTON GROUP */
+    .portal-buttons {
       position: fixed;
       bottom: 10px;
-      right: 10px;
-      font-size: 12px;
-      opacity: 0.6;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 20px;
     }
 
-    /* OWNER PORTAL STYLE */
-    .owner-btn {
-      position: fixed;
-      bottom: 10px;
-      right: 110px;
+    .portal-buttons button {
       font-size: 12px;
-      opacity: 0.6;
-    }
-
-    #ownerPanel {
-      display: none;
-      margin-top: 20px;
-      border: 1px solid #00ffcc;
-      padding: 15px;
-      width: 350px;
-      margin-left: auto;
-      margin-right: auto;
-      text-align: left;
-      box-shadow: 0 0 10px #00ffcc;
+      opacity: 0.7;
+      padding: 8px 18px;
     }
   </style>
 </head>
@@ -143,13 +126,16 @@
   <div id="ownerPanel"></div>
 </div>
 
-<button class="admin-btn" onclick="openAdmin()">Admin Portal</button>
-<button class="owner-btn" onclick="openOwner()">Owner Portal</button>
+<!-- CENTERED BUTTONS -->
+<div class="portal-buttons">
+  <button onclick="openAdmin()">Admin Portal</button>
+  <button onclick="openOwner()">Owner Portal</button>
+</div>
 
 <audio id="beep" src="https://www.soundjay.com/button/beep-07.wav"></audio>
 
 <script>
-/* MATRIX BACKGROUND */
+/* MATRIX */
 const canvas = document.getElementById("matrix");
 const ctx = canvas.getContext("2d");
 
@@ -228,61 +214,46 @@ function deny() {
   }, 800);
 }
 
-/* ADMIN PANEL */
-let adminVisible = false;
-
+/* ADMIN */
 function openAdmin() {
   const pass = prompt("ENTER ADMIN PASSWORD");
   const panel = document.getElementById("adminPanel");
 
   if (pass === "1918") {
+    panel.style.display = panel.style.display === "block" ? "none" : "block";
 
-    adminVisible = !adminVisible;
-    panel.style.display = adminVisible ? "block" : "none";
-
-    if (adminVisible) {
-      let content = "<h3>ADMIN DATABASE</h3>";
-
-      for (let code in routes) {
-        content += `
-          <div class="admin-item">
-            <div class="admin-code">${code}</div>
-            <div class="admin-name">${routes[code].name}</div>
-            <div class="admin-desc">${routes[code].desc}</div>
-          </div>
-        `;
-      }
-
-      panel.innerHTML = content;
+    let content = "<h3>ADMIN DATABASE</h3>";
+    for (let code in routes) {
+      content += `
+        <div class="admin-item">
+          <div class="admin-code">${code}</div>
+          <div>${routes[code].name}</div>
+          <div class="admin-desc">${routes[code].desc}</div>
+        </div>
+      `;
     }
-
+    panel.innerHTML = content;
   } else {
     alert("ACCESS DENIED");
   }
 }
 
-/* OWNER PORTAL */
+/* OWNER */
 function openOwner() {
   const pass = prompt("ENTER OWNER PASSWORD");
   const panel = document.getElementById("ownerPanel");
 
   if (pass === "19181918") {
-
     panel.style.display = panel.style.display === "block" ? "none" : "block";
 
-    if (panel.style.display === "block") {
-      panel.innerHTML = `
-        <h3>OWNER CONTROL</h3>
-
-        <input id="oCode" placeholder="Code">
-        <input id="oName" placeholder="Website Name">
-        <input id="oURL" placeholder="URL">
-        <input id="oDesc" placeholder="Description">
-
-        <button onclick="addCode()">ADD</button>
-      `;
-    }
-
+    panel.innerHTML = `
+      <h3>OWNER CONTROL</h3>
+      <input id="oCode" placeholder="Code">
+      <input id="oName" placeholder="Website Name">
+      <input id="oURL" placeholder="URL">
+      <input id="oDesc" placeholder="Description">
+      <button onclick="addCode()">ADD</button>
+    `;
   } else {
     alert("ACCESS DENIED");
   }
@@ -300,7 +271,6 @@ function addCode() {
   }
 
   routes[code] = { name, url, desc };
-
   alert("Code Added ✅");
 }
 </script>
