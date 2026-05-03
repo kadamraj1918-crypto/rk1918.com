@@ -13,7 +13,6 @@
 
     h1 {
       text-align: center;
-      text-shadow: 0 0 10px #00ffcc;
     }
 
     .box {
@@ -21,7 +20,6 @@
       margin: auto;
       border: 1px solid #00ffcc;
       padding: 15px;
-      box-shadow: 0 0 10px #00ffcc;
     }
 
     input {
@@ -34,12 +32,11 @@
     }
 
     button {
-      margin: 5px 3px;
+      margin: 5px;
       padding: 6px 12px;
       background: transparent;
       border: 1px solid #00ffcc;
       color: #00ffcc;
-      cursor: pointer;
     }
 
     .item {
@@ -56,11 +53,11 @@
 <div class="box">
 
   <input id="code" placeholder="Code">
-  <input id="name" placeholder="Website Name">
+  <input id="name" placeholder="Name">
   <input id="url" placeholder="https://...">
   <input id="desc" placeholder="Description">
 
-  <button onclick="addCode()">ADD CODE</button>
+  <button onclick="addCode()">ADD</button>
 
   <hr>
 
@@ -69,7 +66,14 @@
 </div>
 
 <script>
-let routes = JSON.parse(localStorage.getItem("routes")) || {};
+const defaultRoutes = {
+  "2010": { name: "MultiMovies", url: "https://multimovies.fyi", desc: "Movies" },
+  "1111": { name: "Hacker AI", url: "https://hackerai.co/", desc: "AI tool" },
+  "1212": { name: "NoteGPT", url: "https://notegpt.io", desc: "Notes AI" }
+};
+
+let savedRoutes = JSON.parse(localStorage.getItem("routes")) || {};
+let routes = { ...defaultRoutes, ...savedRoutes };
 
 function save() {
   localStorage.setItem("routes", JSON.stringify(routes));
@@ -98,11 +102,7 @@ function addCode() {
   const url = document.getElementById("url").value.trim();
   const desc = document.getElementById("desc").value;
 
-  if (!code || !url) return alert("Code & URL required");
-
-  if (!url.startsWith("http")) {
-    return alert("Use full URL (https://...)");
-  }
+  if (!code || !url) return alert("Required");
 
   routes[code] = { name, url, desc };
   save();
@@ -110,20 +110,17 @@ function addCode() {
 }
 
 function deleteCode(code) {
-  if (!confirm("Delete?")) return;
   delete routes[code];
   save();
   render();
 }
 
 function editCode(code) {
-  const newName = prompt("Name:", routes[code].name);
-  const newURL = prompt("URL:", routes[code].url);
-  const newDesc = prompt("Desc:", routes[code].desc);
+  const n = prompt("Name:", routes[code].name);
+  const u = prompt("URL:", routes[code].url);
+  const d = prompt("Desc:", routes[code].desc);
 
-  if (!newURL) return;
-
-  routes[code] = { name: newName, url: newURL, desc: newDesc };
+  routes[code] = { name: n, url: u, desc: d };
   save();
   render();
 }
