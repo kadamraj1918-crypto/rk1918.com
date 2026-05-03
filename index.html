@@ -93,7 +93,7 @@
       opacity: 0.7;
     }
 
-    /* CORNER POSITIONS */
+    /* CORNERS */
     .admin-btn {
       position: fixed;
       bottom: 10px;
@@ -127,7 +127,6 @@
   <div id="ownerPanel"></div>
 </div>
 
-<!-- OPPOSITE CORNERS -->
 <button class="admin-btn" onclick="openAdmin()">Admin Portal</button>
 <button class="owner-btn" onclick="openOwner()">Owner Portal</button>
 
@@ -166,25 +165,19 @@ function draw() {
 }
 setInterval(draw, 50);
 
-/* ROUTES */
-const routes = {
+/* ROUTES WITH STORAGE */
+let routes = JSON.parse(localStorage.getItem("routes")) || {
   "2010": { name: "MultiMovies", url: "https://multimovies.fyi", desc: "Movie streaming (free HD)" },
-  "1111": { name: "Hacker AI", url: "https://hackerai.co/", desc: "AI chatbot tool" },
-  "1212": { name: "NoteGPT", url: "https://notegpt.io", desc: "AI notes & summarizer" },
-  "1819": { name: "TBCPL", url: "https://tbcpl.lol/", desc: "Digital library" },
-
-  "2222": { name: "WhatsMyName", url: "https://whatsmyname.me/", desc: "Username search tool" },
-  "4111": { name: "FMHY", url: "https://fmhy.net/", desc: "Free resources hub" },
-  "8787": { name: "Moewalls", url: "https://moewalls.com/", desc: "Live wallpapers" },
-  "4545": { name: "BugMeNot", url: "https://bugmenot.com/", desc: "Shared login database" },
-  "7777": { name: "ElevenLabs", url: "https://elevenlabs.io/app/speech-to-text", desc: "AI voice tools" },
-
-  "9999": { name: "Drive Vault", url: "https://drive.google.com/file/d/1Dquo4RZdefNapARHtKG7jgteNK9F7aCf/view?usp=drive_link", desc: "Private drive file" }
+  "1111": { name: "Hacker AI", url: "https://hackerai.co/", desc: "AI chatbot tool" }
 };
+
+function saveRoutes() {
+  localStorage.setItem("routes", JSON.stringify(routes));
+}
 
 /* TERMINAL */
 function go() {
-  const code = document.getElementById("code").value;
+  const code = document.getElementById("code").value.trim();
   const status = document.getElementById("status");
   document.getElementById("beep").play();
 
@@ -249,7 +242,7 @@ function openOwner() {
       <h3>OWNER CONTROL</h3>
       <input id="oCode" placeholder="Code">
       <input id="oName" placeholder="Website Name">
-      <input id="oURL" placeholder="URL">
+      <input id="oURL" placeholder="https://example.com">
       <input id="oDesc" placeholder="Description">
       <button onclick="addCode()">ADD</button>
     `;
@@ -259,9 +252,9 @@ function openOwner() {
 }
 
 function addCode() {
-  const code = document.getElementById("oCode").value;
+  const code = document.getElementById("oCode").value.trim();
   const name = document.getElementById("oName").value;
-  const url = document.getElementById("oURL").value;
+  const url = document.getElementById("oURL").value.trim();
   const desc = document.getElementById("oDesc").value;
 
   if (!code || !url) {
@@ -269,8 +262,15 @@ function addCode() {
     return;
   }
 
+  if (!url.startsWith("http")) {
+    alert("URL must start with https://");
+    return;
+  }
+
   routes[code] = { name, url, desc };
-  alert("Code Added ✅");
+  saveRoutes();
+
+  alert("Code Added & Saved ✅");
 }
 </script>
 
