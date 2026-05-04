@@ -2,10 +2,10 @@
 <html>
 <head>
   <title>ACCESS TERMINAL</title>
-
   <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
     body {
-      margin: 0;
       overflow: hidden;
       background: black;
       color: #00ffcc;
@@ -13,236 +13,685 @@
       text-align: center;
     }
 
-    canvas {
-      position: fixed;
-      top: 0;
-      left: 0;
-      z-index: -1;
-    }
+    canvas { position: fixed; top: 0; left: 0; z-index: -1; }
 
-    .container {
-      margin-top: 15%;
-    }
+    .container { margin-top: 15%; }
 
     h1 {
       letter-spacing: 3px;
       text-shadow: 0 0 10px #00ffcc;
+      margin-bottom: 24px;
     }
 
-    input {
-      padding: 12px;
+    .main-input {
+      padding: 12px 20px;
       background: transparent;
       border: 1px solid #00ffcc;
       color: #00ffcc;
       text-align: center;
       outline: none;
+      font-family: monospace;
+      font-size: 16px;
+      letter-spacing: 2px;
+      width: 220px;
     }
 
-    button {
-      margin-top: 20px;
-      padding: 10px 25px;
+    .main-input::placeholder { color: #00ffcc55; }
+
+    .execute-btn {
+      display: block;
+      margin: 16px auto 0;
+      padding: 10px 30px;
       background: transparent;
       border: 1px solid #00ffcc;
       color: #00ffcc;
       cursor: pointer;
+      font-family: monospace;
+      font-size: 14px;
+      letter-spacing: 2px;
     }
 
-    #status {
-      margin-top: 20px;
-      height: 20px;
-    }
+    .execute-btn:hover { background: #00ffcc22; }
 
-    .shake {
-      animation: shake 0.3s;
-    }
+    #status { margin-top: 20px; height: 22px; font-size: 14px; letter-spacing: 2px; }
+
+    .shake { animation: shake 0.35s; }
 
     @keyframes shake {
-      0% { transform: translateX(-5px); }
-      25% { transform: translateX(5px); }
-      50% { transform: translateX(-5px); }
-      75% { transform: translateX(5px); }
-      100% { transform: translateX(0); }
+      0%   { transform: translateX(-6px); }
+      25%  { transform: translateX(6px);  }
+      50%  { transform: translateX(-6px); }
+      75%  { transform: translateX(6px);  }
+      100% { transform: translateX(0);    }
     }
 
-    #adminPanel {
-      display: none;
-      margin-top: 20px;
-      border: 1px solid #00ffcc;
-      padding: 15px;
-      width: 350px;
-      margin-left: auto;
-      margin-right: auto;
-      text-align: left;
-      box-shadow: 0 0 10px #00ffcc;
-      max-height: 300px;
-      overflow-y: auto;
-    }
-
-    .admin-item {
-      border-bottom: 1px solid #00ffcc33;
-      padding: 8px 0;
-    }
-
-    .admin-code {
-      color: #00ffff;
-      font-weight: bold;
-    }
-
-    .admin-name {
-      font-size: 14px;
-    }
-
-    .admin-desc {
-      font-size: 12px;
-      opacity: 0.7;
-    }
-
-    .admin-btn {
+    .bottom-btns {
       position: fixed;
-      bottom: 10px;
-      right: 10px;
-      font-size: 12px;
-      opacity: 0.6;
+      bottom: 14px;
+      right: 14px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 8px;
+      z-index: 10;
     }
+
+    .portal-btn {
+      padding: 7px 16px;
+      background: transparent;
+      cursor: pointer;
+      font-family: monospace;
+      font-size: 12px;
+      letter-spacing: 1px;
+    }
+
+    .portal-btn.cyan  { border: 1px solid #00ffcc; color: #00ffcc; opacity: 0.65; }
+    .portal-btn.gold  { border: 1px solid #ffcc00; color: #ffcc00; }
+    .portal-btn.cyan:hover { background: #00ffcc18; opacity: 1; }
+    .portal-btn.gold:hover { background: #ffcc0018; }
+
+    /* MODAL SYSTEM */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.88);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-overlay.active { display: flex; }
+
+    .modal-box {
+      border: 1px solid var(--mc);
+      box-shadow: 0 0 24px var(--mc-glow);
+      padding: 28px 32px;
+      min-width: 320px;
+      max-width: 420px;
+      width: 90%;
+      text-align: center;
+      background: #000;
+    }
+
+    .modal-box.cyan-modal { --mc: #00ffcc; --mc-glow: #00ffcc44; }
+    .modal-box.gold-modal { --mc: #ffcc00; --mc-glow: #ffcc0044; }
+
+    .modal-box h3 {
+      letter-spacing: 3px;
+      color: var(--mc);
+      margin-bottom: 20px;
+      font-size: 15px;
+      text-shadow: 0 0 8px var(--mc);
+    }
+
+    .modal-input {
+      width: 100%;
+      padding: 10px 14px;
+      background: transparent;
+      border: 1px solid var(--mc);
+      color: var(--mc);
+      font-family: monospace;
+      font-size: 14px;
+      text-align: center;
+      outline: none;
+      letter-spacing: 3px;
+      margin-bottom: 16px;
+    }
+
+    .modal-input::placeholder { color: var(--mc); opacity: 0.35; letter-spacing: 1px; }
+
+    .modal-btns { display: flex; gap: 10px; justify-content: center; }
+
+    .modal-btn {
+      padding: 9px 22px;
+      background: transparent;
+      border: 1px solid var(--mc);
+      color: var(--mc);
+      cursor: pointer;
+      font-family: monospace;
+      font-size: 13px;
+      letter-spacing: 1px;
+    }
+
+    .modal-btn:hover { opacity: 0.75; }
+    .modal-btn.cancel { opacity: 0.45; }
+
+    .modal-err {
+      font-size: 12px;
+      color: #ff4444;
+      margin-bottom: 12px;
+      height: 16px;
+      letter-spacing: 1px;
+    }
+
+    .confirm-msg { color: var(--mc); font-size: 13px; margin-bottom: 20px; line-height: 1.6; white-space: pre-line; }
+
+    /* ADMIN PANEL */
+    .admin-panel-box {
+      border: 1px solid #00ffcc;
+      box-shadow: 0 0 20px #00ffcc33;
+      padding: 24px;
+      width: 90%;
+      max-width: 460px;
+      background: #000;
+      max-height: 80vh;
+      overflow-y: auto;
+      text-align: left;
+    }
+
+    .admin-panel-box h3 {
+      color: #00ffcc;
+      letter-spacing: 3px;
+      text-align: center;
+      margin-bottom: 16px;
+      text-shadow: 0 0 8px #00ffcc;
+    }
+
+    .admin-item { border-bottom: 1px solid #00ffcc22; padding: 10px 0; }
+    .admin-code { color: #00ffff; font-weight: bold; font-size: 16px; }
+    .admin-name { font-size: 14px; margin-top: 2px; }
+    .admin-desc { font-size: 12px; opacity: 0.6; margin-top: 2px; }
+    .admin-url  { font-size: 11px; opacity: 0.45; margin-top: 2px; word-break: break-all; }
+
+    .close-modal-btn {
+      display: block;
+      margin: 20px auto 0;
+      padding: 9px 28px;
+      background: transparent;
+      border: 1px solid #00ffcc;
+      color: #00ffcc;
+      cursor: pointer;
+      font-family: monospace;
+      font-size: 13px;
+      letter-spacing: 1px;
+    }
+
+    .close-modal-btn:hover { background: #00ffcc18; }
+
+    /* OWNER PORTAL */
+    #ownerOverlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.93);
+      z-index: 200;
+      overflow-y: auto;
+      padding: 30px 12px;
+    }
+
+    #ownerPanel {
+      max-width: 740px;
+      margin: 0 auto;
+      border: 1px solid #ffcc00;
+      box-shadow: 0 0 24px #ffcc0044;
+      padding: 28px;
+      text-align: left;
+      background: #000;
+    }
+
+    #ownerPanel h2 {
+      color: #ffcc00;
+      letter-spacing: 3px;
+      text-align: center;
+      margin-bottom: 24px;
+      font-size: 16px;
+      text-shadow: 0 0 10px #ffcc00;
+    }
+
+    .section-label {
+      font-size: 11px;
+      letter-spacing: 2px;
+      color: #ffcc0077;
+      border-bottom: 1px solid #ffcc0022;
+      padding-bottom: 6px;
+      margin: 20px 0 14px;
+    }
+
+    .add-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .add-grid .span2 { grid-column: span 2; }
+
+    .field-input {
+      width: 100%;
+      padding: 9px 12px;
+      background: transparent;
+      border: 1px solid #ffcc0055;
+      color: #ffcc00;
+      font-family: monospace;
+      font-size: 13px;
+      outline: none;
+    }
+
+    .field-input::placeholder { color: #ffcc0040; }
+    .field-input:focus { border-color: #ffcc00; }
+
+    .add-btn {
+      width: 100%;
+      padding: 10px;
+      background: transparent;
+      border: 1px solid #ffcc00;
+      color: #ffcc00;
+      cursor: pointer;
+      font-family: monospace;
+      font-size: 13px;
+      letter-spacing: 1px;
+    }
+
+    .add-btn:hover { background: #ffcc0018; }
+
+    .form-msg { font-size: 12px; letter-spacing: 1px; margin-top: 8px; height: 16px; }
+    .form-msg.ok  { color: #00ffcc; }
+    .form-msg.err { color: #ff4444; }
+
+    .rtable { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 4px; }
+
+    .rtable th {
+      font-size: 11px; letter-spacing: 1px;
+      color: #ffcc0066; text-align: left;
+      padding: 6px 8px; border-bottom: 1px solid #ffcc0022;
+    }
+
+    .rtable td { padding: 8px 8px; border-bottom: 1px solid #ffcc0015; vertical-align: middle; color: #ffcc00; }
+    .rtable tr:hover td { background: #ffcc000c; }
+
+    .col-code { color: #00ffff; font-weight: bold; font-size: 15px; }
+    .col-url  { font-size: 11px; opacity: 0.5; word-break: break-all; }
+
+    .edit-field {
+      background: transparent;
+      border: 1px solid #ffcc0055;
+      color: #ffcc00;
+      padding: 5px 8px;
+      font-family: monospace;
+      font-size: 12px;
+      width: 100%;
+      outline: none;
+    }
+
+    .edit-field:focus { border-color: #ffcc00; }
+
+    .act-btns { display: flex; gap: 6px; }
+
+    .act-btn {
+      padding: 5px 10px;
+      font-size: 11px;
+      font-family: monospace;
+      cursor: pointer;
+      background: transparent;
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+    }
+
+    .act-btn.edit   { border: 1px solid #ffcc00; color: #ffcc00; }
+    .act-btn.save   { border: 1px solid #00ffcc; color: #00ffcc; }
+    .act-btn.del    { border: 1px solid #ff4444; color: #ff4444; }
+    .act-btn.cancel { border: 1px solid #ffcc0055; color: #ffcc0077; }
+    .act-btn:hover  { opacity: 0.75; }
+
+    .no-routes { text-align: center; color: #ffcc0044; padding: 20px; font-size: 13px; }
+
+    .close-owner-btn {
+      display: block;
+      margin: 28px auto 0;
+      padding: 10px 36px;
+      background: transparent;
+      border: 1px solid #ffcc00;
+      color: #ffcc00;
+      cursor: pointer;
+      font-family: monospace;
+      font-size: 13px;
+      letter-spacing: 2px;
+    }
+
+    .close-owner-btn:hover { background: #ffcc0018; }
   </style>
 </head>
-
 <body>
 
 <canvas id="matrix"></canvas>
 
-<div class="container">
+<div class="container" id="mainContainer">
   <h1>ACCESS TERMINAL</h1>
-  <input id="code" placeholder="ENTER CODE">
-  <br>
-  <button onclick="go()">EXECUTE</button>
+  <input class="main-input" id="code" type="text" placeholder="ENTER CODE" maxlength="10"
+         onkeydown="if(event.key==='Enter') go()">
+  <button class="execute-btn" onclick="go()">EXECUTE</button>
   <div id="status"></div>
-
-  <div id="adminPanel"></div>
 </div>
 
-<button class="admin-btn" onclick="openAdmin()">Admin Portal</button>
+<div class="bottom-btns">
+  <button class="portal-btn gold" onclick="openOwnerAuth()">Owner Portal</button>
+  <button class="portal-btn cyan" onclick="openAdminAuth()">Admin Portal</button>
+</div>
 
-<audio id="beep" src="https://www.soundjay.com/button/beep-07.wav"></audio>
+<!-- ADMIN AUTH MODAL -->
+<div class="modal-overlay" id="adminAuthModal">
+  <div class="modal-box cyan-modal">
+    <h3>ADMIN ACCESS</h3>
+    <div class="modal-err" id="adminAuthErr"></div>
+    <input class="modal-input" id="adminPassInput" type="password" placeholder="PASSWORD"
+           onkeydown="if(event.key==='Enter') submitAdminAuth()">
+    <div class="modal-btns">
+      <button class="modal-btn" onclick="submitAdminAuth()">ENTER</button>
+      <button class="modal-btn cancel" onclick="closeModal('adminAuthModal')">CANCEL</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN PANEL MODAL -->
+<div class="modal-overlay" id="adminOverlay">
+  <div class="admin-panel-box">
+    <h3>ADMIN DATABASE</h3>
+    <div id="adminList"></div>
+    <button class="close-modal-btn" onclick="closeModal('adminOverlay')">CLOSE</button>
+  </div>
+</div>
+
+<!-- OWNER AUTH MODAL -->
+<div class="modal-overlay" id="ownerAuthModal">
+  <div class="modal-box gold-modal">
+    <h3>OWNER ACCESS</h3>
+    <div class="modal-err" id="ownerAuthErr"></div>
+    <input class="modal-input" id="ownerPassInput" type="password" placeholder="PASSWORD"
+           onkeydown="if(event.key==='Enter') submitOwnerAuth()">
+    <div class="modal-btns">
+      <button class="modal-btn" onclick="submitOwnerAuth()">ENTER</button>
+      <button class="modal-btn cancel" onclick="closeModal('ownerAuthModal')">CANCEL</button>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIRM DELETE MODAL -->
+<div class="modal-overlay" id="confirmModal" style="z-index:400;">
+  <div class="modal-box gold-modal">
+    <h3>CONFIRM DELETE</h3>
+    <div class="confirm-msg" id="confirmMsg"></div>
+    <div class="modal-btns">
+      <button class="modal-btn" id="confirmOkBtn">DELETE</button>
+      <button class="modal-btn cancel" onclick="closeModal('confirmModal')">CANCEL</button>
+    </div>
+  </div>
+</div>
+
+<!-- OWNER PORTAL -->
+<div id="ownerOverlay" style="z-index:300;">
+  <div id="ownerPanel">
+    <h2>OWNER PORTAL</h2>
+
+    <div class="section-label">ADD NEW ROUTE</div>
+    <div class="add-grid">
+      <input class="field-input" id="nCode" type="text" placeholder="Code  (e.g. 1234)" maxlength="12">
+      <input class="field-input" id="nName" type="text" placeholder="Site Name">
+      <input class="field-input span2" id="nUrl"  type="text" placeholder="URL  (https://...)">
+      <input class="field-input span2" id="nDesc" type="text" placeholder="Description (optional)">
+      <div class="span2">
+        <button class="add-btn" onclick="addRoute()">+ ADD ROUTE</button>
+        <div class="form-msg" id="addMsg"></div>
+      </div>
+    </div>
+
+    <div class="section-label">MANAGE ROUTES</div>
+    <table class="rtable">
+      <thead>
+        <tr>
+          <th style="width:70px">CODE</th>
+          <th>NAME</th>
+          <th>URL / DESC</th>
+          <th style="width:110px">ACTIONS</th>
+        </tr>
+      </thead>
+      <tbody id="routesTbody"></tbody>
+    </table>
+
+    <button class="close-owner-btn" onclick="closeOwner()">CLOSE PORTAL</button>
+  </div>
+</div>
 
 <script>
-/* MATRIX BACKGROUND */
+/* MATRIX */
 const canvas = document.getElementById("matrix");
-const ctx = canvas.getContext("2d");
-
-canvas.width = window.innerWidth;
+const ctx    = canvas.getContext("2d");
+canvas.width  = window.innerWidth;
 canvas.height = window.innerHeight;
-
-const letters = "01";
 const fontSize = 14;
-const columns = canvas.width / fontSize;
-const drops = Array(Math.floor(columns)).fill(1);
-
-function draw() {
+const columns  = Math.floor(canvas.width / fontSize);
+const drops    = Array(columns).fill(1);
+(function drawMatrix() {
   ctx.fillStyle = "rgba(0,0,0,0.05)";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
-
   ctx.fillStyle = "#00ffcc";
   ctx.font = fontSize + "px monospace";
-
   drops.forEach((y, i) => {
-    const text = letters[Math.floor(Math.random() * letters.length)];
-    ctx.fillText(text, i * fontSize, y * fontSize);
-
-    if (y * fontSize > canvas.height && Math.random() > 0.975) {
-      drops[i] = 0;
-    }
-
+    ctx.fillText(Math.random() > 0.5 ? "1" : "0", i * fontSize, y * fontSize);
+    if (y * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
     drops[i]++;
   });
-}
-setInterval(draw, 50);
+  setTimeout(drawMatrix, 50);
+})();
 
-/* ROUTES WITH INFO */
-const routes = {
-  "2010": { name: "MultiMovies", url: "https://multimovies.fyi", desc: "Movie streaming website (free HD content)" },
-  "1111": { name: "Hacker AI", url: "https://hackerai.co/", desc: "AI chatbot & hacking-style assistant tool" },
-  "1212": { name: "NoteGPT", url: "https://notegpt.io", desc: "AI notes summarizer & productivity tool" },
-  "1819": { name: "TBCPL", url: "https://tbcpl.lol/", desc: "Online library & digital resources" },
-
-  "2222": { name: "WhatsMyName", url: "https://whatsmyname.me/", desc: "Username search across social platforms" },
-  "4111": { name: "FMHY", url: "https://fmhy.net/", desc: "Huge collection of free tools & resources" },
-  "8787": { name: "Moewalls", url: "https://moewalls.com/", desc: "Live wallpapers for desktop" },
-  "4545": { name: "BugMeNot", url: "https://bugmenot.com/", desc: "Shared logins for websites" },
-  "7777": { name: "ElevenLabs", url: "https://elevenlabs.io/app/speech-to-text", desc: "AI voice & speech tools" },
-
-  "9999": { name: "Drive Vault", url: "https://drive.google.com/file/d/1Dquo4RZdefNapARHtKG7jgteNK9F7aCf/view?usp=drive_link", desc: "Private Google Drive storage file" }
+/* DATA */
+const STORE = "term_routes_v2";
+const DEFAULTS = {
+  "2010": { name: "MultiMovies",  url: "https://multimovies.fyi", desc: "Movie streaming website (free HD content)" },
+  "1111": { name: "Hacker AI",    url: "https://hackerai.co/", desc: "AI chatbot & hacking-style assistant tool" },
+  "1212": { name: "NoteGPT",      url: "https://notegpt.io", desc: "AI notes summarizer & productivity tool" },
+  "1819": { name: "TBCPL",        url: "https://tbcpl.lol/", desc: "Online library & digital resources" },
+  "2222": { name: "WhatsMyName",  url: "https://whatsmyname.me/", desc: "Username search across social platforms" },
+  "4111": { name: "FMHY",         url: "https://fmhy.net/", desc: "Huge collection of free tools & resources" },
+  "8787": { name: "Moewalls",     url: "https://moewalls.com/", desc: "Live wallpapers for desktop" },
+  "4545": { name: "BugMeNot",     url: "https://bugmenot.com/", desc: "Shared logins for websites" },
+  "7777": { name: "ElevenLabs",   url: "https://elevenlabs.io/app/speech-to-text", desc: "AI voice & speech tools" },
+  "9999": { name: "Drive Vault",  url: "https://drive.google.com/file/d/1Dquo4RZdefNapARHtKG7jgteNK9F7aCf/view?usp=drive_link", desc: "Private Google Drive storage file" }
 };
+
+let routes = {};
+
+function loadRoutes() {
+  try {
+    const s = localStorage.getItem(STORE);
+    routes = s ? JSON.parse(s) : JSON.parse(JSON.stringify(DEFAULTS));
+  } catch(e) { routes = JSON.parse(JSON.stringify(DEFAULTS)); }
+}
+
+function saveRoutes() {
+  try { localStorage.setItem(STORE, JSON.stringify(routes)); } catch(e) {}
+}
+
+loadRoutes();
 
 /* TERMINAL */
 function go() {
-  const code = document.getElementById("code").value;
+  const code   = document.getElementById("code").value.trim();
   const status = document.getElementById("status");
-  const beep = document.getElementById("beep");
-
-  beep.play();
-  status.innerText = "ACCESSING...";
-
+  status.style.color = "#00ffcc";
+  status.innerText   = "ACCESSING...";
   setTimeout(() => {
     if (routes[code]) {
-      status.innerText = "ACCESS GRANTED 🚀";
-
-      setTimeout(() => {
-        window.open(routes[code].url, "_blank");
-      }, 900);
-
+      status.innerText = "ACCESS GRANTED";
+      setTimeout(() => { window.open(routes[code].url, "_blank"); }, 900);
     } else {
-      deny();
+      status.style.color = "#ff4444";
+      status.innerText   = "ACCESS DENIED";
+      document.getElementById("mainContainer").classList.add("shake");
+      setTimeout(() => {
+        document.getElementById("mainContainer").classList.remove("shake");
+        status.innerText = "";
+      }, 800);
     }
   }, 800);
 }
 
-function deny() {
-  const status = document.getElementById("status");
-  const container = document.querySelector(".container");
+/* MODAL HELPERS */
+function openModal(id) { document.getElementById(id).classList.add("active"); }
+function closeModal(id) { document.getElementById(id).classList.remove("active"); }
 
-  status.innerText = "ACCESS DENIED";
-  container.classList.add("shake");
-
-  setTimeout(() => {
-    container.classList.remove("shake");
-    status.innerText = "";
-  }, 800);
+/* ADMIN AUTH */
+function openAdminAuth() {
+  document.getElementById("adminPassInput").value = "";
+  document.getElementById("adminAuthErr").innerText = "";
+  openModal("adminAuthModal");
+  setTimeout(() => document.getElementById("adminPassInput").focus(), 60);
 }
 
-/* ADMIN PANEL */
-let adminVisible = false;
-
-function openAdmin() {
-  const pass = prompt("ENTER ADMIN PASSWORD");
-  const panel = document.getElementById("adminPanel");
-
-  if (pass === "1918") {
-
-    adminVisible = !adminVisible;
-    panel.style.display = adminVisible ? "block" : "none";
-
-    if (adminVisible) {
-      let content = "<h3>ADMIN DATABASE</h3>";
-
-      for (let code in routes) {
-        content += `
-          <div class="admin-item">
-            <div class="admin-code">${code}</div>
-            <div class="admin-name">${routes[code].name}</div>
-            <div class="admin-desc">${routes[code].desc}</div>
-          </div>
-        `;
-      }
-
-      panel.innerHTML = content;
-    }
-
+function submitAdminAuth() {
+  const pw = document.getElementById("adminPassInput").value;
+  if (pw === "1918") {
+    closeModal("adminAuthModal");
+    renderAdmin();
+    openModal("adminOverlay");
   } else {
-    alert("ACCESS DENIED");
+    document.getElementById("adminAuthErr").innerText = "WRONG PASSWORD";
+    document.getElementById("adminPassInput").value = "";
+    document.getElementById("adminPassInput").focus();
   }
 }
-</script>
 
+function renderAdmin() {
+  const keys = Object.keys(routes);
+  const list = document.getElementById("adminList");
+  if (!keys.length) {
+    list.innerHTML = '<div style="opacity:.4;text-align:center;padding:16px;font-size:13px;">No routes.</div>';
+    return;
+  }
+  list.innerHTML = keys.map(code => `
+    <div class="admin-item">
+      <div class="admin-code">[${esc(code)}]</div>
+      <div class="admin-name">${esc(routes[code].name)}</div>
+      <div class="admin-desc">${esc(routes[code].desc || "")}</div>
+      <div class="admin-url">${esc(routes[code].url)}</div>
+    </div>`).join("");
+}
+
+/* OWNER AUTH */
+function openOwnerAuth() {
+  document.getElementById("ownerPassInput").value = "";
+  document.getElementById("ownerAuthErr").innerText = "";
+  openModal("ownerAuthModal");
+  setTimeout(() => document.getElementById("ownerPassInput").focus(), 60);
+}
+
+function submitOwnerAuth() {
+  const pw = document.getElementById("ownerPassInput").value;
+  if (pw === "19181918") {
+    closeModal("ownerAuthModal");
+    clearAddForm();
+    renderTable();
+    document.getElementById("ownerOverlay").style.display = "block";
+  } else {
+    document.getElementById("ownerAuthErr").innerText = "WRONG PASSWORD";
+    document.getElementById("ownerPassInput").value = "";
+    document.getElementById("ownerPassInput").focus();
+  }
+}
+
+function closeOwner() { document.getElementById("ownerOverlay").style.display = "none"; }
+
+/* ADD ROUTE */
+function clearAddForm() {
+  ["nCode","nName","nUrl","nDesc"].forEach(id => document.getElementById(id).value = "");
+  setMsg("addMsg","","");
+}
+
+function setMsg(id, text, type) {
+  const el = document.getElementById(id);
+  el.textContent = text;
+  el.className = "form-msg" + (type ? " " + type : "");
+  if (text) setTimeout(() => { el.textContent=""; el.className="form-msg"; }, 3500);
+}
+
+function addRoute() {
+  const code = document.getElementById("nCode").value.trim();
+  const name = document.getElementById("nName").value.trim();
+  const url  = document.getElementById("nUrl").value.trim();
+  const desc = document.getElementById("nDesc").value.trim();
+  if (!code) return setMsg("addMsg","Code is required.","err");
+  if (!name) return setMsg("addMsg","Name is required.","err");
+  if (!url)  return setMsg("addMsg","URL is required.","err");
+  if (!url.startsWith("http")) return setMsg("addMsg","URL must start with http.","err");
+  if (routes[code]) return setMsg("addMsg", 'Code "'+code+'" already exists.', "err");
+  routes[code] = { name, url, desc };
+  saveRoutes();
+  setMsg("addMsg","Route ["+code+"] added!","ok");
+  clearAddForm();
+  renderTable();
+}
+
+/* DELETE */
+let pendingDel = null;
+function deleteRoute(code) {
+  pendingDel = code;
+  document.getElementById("confirmMsg").innerText =
+    'Delete [' + code + '] \u2192 ' + routes[code].name + '?\nThis cannot be undone.';
+  document.getElementById("confirmOkBtn").onclick = function() {
+    delete routes[pendingDel];
+    saveRoutes();
+    closeModal("confirmModal");
+    renderTable();
+  };
+  openModal("confirmModal");
+}
+
+/* EDIT */
+function startEdit(code) {
+  const r = routes[code];
+  const row = document.getElementById("row-"+code);
+  row.innerHTML =
+    '<td class="col-code">'+esc(code)+'</td>' +
+    '<td><input class="edit-field" id="e-name-'+code+'" value="'+esc(r.name)+'" placeholder="Name"></td>' +
+    '<td>' +
+      '<input class="edit-field" id="e-url-'+code+'" value="'+esc(r.url)+'" placeholder="URL" style="margin-bottom:4px;">' +
+      '<input class="edit-field" id="e-desc-'+code+'" value="'+esc(r.desc||'')+'" placeholder="Desc">' +
+    '</td>' +
+    '<td><div class="act-btns">' +
+      '<button class="act-btn save" onclick="saveEdit(\''+code+'\')">SAVE</button>' +
+      '<button class="act-btn cancel" onclick="renderTable()">X</button>' +
+    '</div></td>';
+}
+
+function saveEdit(code) {
+  const name = document.getElementById("e-name-"+code).value.trim();
+  const url  = document.getElementById("e-url-"+code).value.trim();
+  const desc = document.getElementById("e-desc-"+code).value.trim();
+  if (!name) return;
+  if (!url || !url.startsWith("http")) return;
+  routes[code] = { name, url, desc };
+  saveRoutes();
+  renderTable();
+}
+
+/* TABLE */
+function renderTable() {
+  const tbody = document.getElementById("routesTbody");
+  const keys = Object.keys(routes);
+  if (!keys.length) {
+    tbody.innerHTML = '<tr><td colspan="4" class="no-routes">No routes yet. Add one above.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = keys.map(code =>
+    '<tr id="row-'+code+'">' +
+      '<td class="col-code">'+esc(code)+'</td>' +
+      '<td>'+esc(routes[code].name)+'</td>' +
+      '<td>' +
+        '<div class="col-url">'+esc(routes[code].url)+'</div>' +
+        '<div style="font-size:11px;opacity:0.45;margin-top:2px;">'+esc(routes[code].desc||"")+'</div>' +
+      '</td>' +
+      '<td><div class="act-btns">' +
+        '<button class="act-btn edit" onclick="startEdit(\''+code+'\')">EDIT</button>' +
+        '<button class="act-btn del" onclick="deleteRoute(\''+code+'\')">DEL</button>' +
+      '</div></td>' +
+    '</tr>'
+  ).join("");
+}
+
+function esc(str) {
+  return String(str)
+    .replace(/&/g,"&amp;").replace(/"/g,"&quot;")
+    .replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/'/g,"&#39;");
+}
+</script>
 </body>
 </html>
