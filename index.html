@@ -5,92 +5,167 @@
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
+    :root {
+      --tc:      #00ffcc;
+      --tc-dim:  #00ffcc55;
+      --tc-glow: #00ffcc44;
+      --tc-faint:#00ffcc15;
+      --tc-hard: #00ffcccc;
+    }
+    :root.theme-green { --tc:#00ff41; --tc-dim:#00ff4155; --tc-glow:#00ff4144; --tc-faint:#00ff4115; }
+    :root.theme-red   { --tc:#ff2222; --tc-dim:#ff222255; --tc-glow:#ff222244; --tc-faint:#ff222215; }
+    :root.theme-amber { --tc:#ffb000; --tc-dim:#ffb00055; --tc-glow:#ffb00044; --tc-faint:#ffb00015; }
+    :root.theme-cyan  { --tc:#00ffcc; --tc-dim:#00ffcc55; --tc-glow:#00ffcc44; --tc-faint:#00ffcc15; }
+
     body {
       overflow: hidden;
-      background: black;
-      color: #00ffcc;
+      background: #000;
+      color: var(--tc);
       font-family: monospace;
       text-align: center;
     }
+
 
     canvas { position: fixed; top: 0; left: 0; z-index: -1; }
 
-    .container { margin-top: 15%; }
 
+    /* ── CONTAINER ── */
+    .container { margin-top: 13%; }
+
+    /* ── TITLE ── */
     h1 {
       letter-spacing: 3px;
-      text-shadow: 0 0 10px #00ffcc;
-      margin-bottom: 24px;
+      font-size: 26px;
+      color: var(--tc);
+      margin-bottom: 28px;
+      text-shadow: 0 0 10px var(--tc);
     }
 
+    /* ── INPUT ── */
     .main-input {
-      padding: 12px 20px;
+      padding: 13px 22px;
       background: transparent;
-      border: 1px solid #00ffcc;
-      color: #00ffcc;
+      border: 1px solid var(--tc-dim);
+      color: var(--tc);
       text-align: center;
       outline: none;
       font-family: monospace;
-      font-size: 16px;
-      letter-spacing: 2px;
-      width: 220px;
+      font-size: 18px;
+      letter-spacing: 4px;
+      width: 240px;
+      transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+    }
+    .main-input::placeholder { color: var(--tc-dim); letter-spacing: 2px; }
+    .main-input:focus {
+      border-color: var(--tc);
+      box-shadow: 0 0 12px var(--tc-glow), inset 0 0 8px var(--tc-faint);
+      background: var(--tc-faint);
     }
 
-    .main-input::placeholder { color: #00ffcc55; }
-
+    /* ── EXECUTE BUTTON ── */
     .execute-btn {
       display: block;
       margin: 16px auto 0;
       padding: 10px 30px;
       background: transparent;
-      border: 1px solid #00ffcc;
-      color: #00ffcc;
+      border: 1px solid var(--tc);
+      color: var(--tc);
       cursor: pointer;
       font-family: monospace;
       font-size: 14px;
       letter-spacing: 2px;
     }
+    .execute-btn:hover { background: var(--tc-faint); }
 
-    .execute-btn:hover { background: #00ffcc22; }
-
-    #status { margin-top: 20px; height: 22px; font-size: 14px; letter-spacing: 2px; }
-
-    .shake { animation: shake 0.35s; }
-
-    @keyframes shake {
-      0%   { transform: translateX(-6px); }
-      25%  { transform: translateX(6px);  }
-      50%  { transform: translateX(-6px); }
-      75%  { transform: translateX(6px);  }
-      100% { transform: translateX(0);    }
+    /* ── STATUS ── */
+    #status {
+      margin-top: 22px;
+      height: 26px;
+      font-size: 15px;
+      letter-spacing: 3px;
+      transition: color 0.2s;
     }
 
-    .bottom-btns {
+
+    /* ── SHAKE ── */
+    .shake { animation: shake 0.4s cubic-bezier(.36,.07,.19,.97); }
+    @keyframes shake {
+      10%,90% { transform: translateX(-3px); }
+      20%,80% { transform: translateX(5px); }
+      30%,50%,70% { transform: translateX(-6px); }
+      40%,60% { transform: translateX(6px); }
+    }
+
+    /* ── THEME BAR ── */
+    .theme-bar {
       position: fixed;
-      bottom: 14px;
+      top: 14px;
       right: 14px;
       display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-      gap: 8px;
+      gap: 10px;
       z-index: 10;
+      align-items: center;
     }
 
+    .theme-label {
+      font-size: 10px;
+      letter-spacing: 2px;
+      opacity: 0.35;
+      color: var(--tc);
+    }
+
+    .theme-dot {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .theme-dot:hover { transform: scale(1.4); }
+    .theme-dot.active {
+      border-color: #fff;
+      box-shadow: 0 0 8px currentColor;
+    }
+    .dot-cyan  { background: #00ffcc; }
+    .dot-green { background: #00ff41; }
+    .dot-red   { background: #ff2222; }
+    .dot-amber { background: #ffb000; }
+
+    /* ── PORTAL BUTTONS ── */
     .portal-btn {
-      padding: 7px 16px;
+      position: fixed;
+      bottom: 14px;
+      padding: 8px 18px;
       background: transparent;
       cursor: pointer;
       font-family: monospace;
       font-size: 12px;
       letter-spacing: 1px;
+      z-index: 10;
+      transition: box-shadow 0.25s, background 0.25s, opacity 0.25s;
     }
 
-    .portal-btn.cyan  { border: 1px solid #00ffcc; color: #00ffcc; opacity: 0.65; }
-    .portal-btn.gold  { border: 1px solid #ffcc00; color: #ffcc00; }
-    .portal-btn.cyan:hover { background: #00ffcc18; opacity: 1; }
-    .portal-btn.gold:hover { background: #ffcc0018; }
+    .portal-btn.owner {
+      left: 14px;
+      border: 1px solid #ffcc00;
+      color: #ffcc00;
+    }
+    .portal-btn.owner:hover { background: #ffcc0018; }
 
-    /* MODAL SYSTEM */
+    .portal-btn.admin {
+      right: 14px;
+      border: 1px solid var(--tc);
+      color: var(--tc);
+      opacity: 0.5;
+    }
+    .portal-btn.admin:hover {
+      opacity: 1;
+      background: var(--tc-faint);
+      box-shadow: 0 0 14px var(--tc-glow);
+    }
+
+    /* ── MODAL SYSTEM ── */
     .modal-overlay {
       display: none;
       position: fixed;
@@ -100,51 +175,54 @@
       align-items: center;
       justify-content: center;
     }
-
     .modal-overlay.active { display: flex; }
 
     .modal-box {
       border: 1px solid var(--mc);
-      box-shadow: 0 0 24px var(--mc-glow);
-      padding: 28px 32px;
+      box-shadow: 0 0 30px var(--mc-glow), 0 0 80px var(--mc-far);
+      padding: 30px 34px;
       min-width: 320px;
       max-width: 420px;
       width: 90%;
       text-align: center;
       background: #000;
-    }
+}
 
-    .modal-box.cyan-modal { --mc: #00ffcc; --mc-glow: #00ffcc44; }
-    .modal-box.gold-modal { --mc: #ffcc00; --mc-glow: #ffcc0044; }
+    .modal-box.theme-modal { --mc: var(--tc); --mc-glow: var(--tc-glow); --mc-far: var(--tc-faint); }
+    .modal-box.gold-modal  { --mc: #ffcc00;   --mc-glow: #ffcc0044;      --mc-far: #ffcc0011; }
 
     .modal-box h3 {
       letter-spacing: 3px;
       color: var(--mc);
-      margin-bottom: 20px;
+      margin-bottom: 22px;
       font-size: 15px;
-      text-shadow: 0 0 8px var(--mc);
+      text-shadow: 0 0 10px var(--mc);
     }
 
     .modal-input {
       width: 100%;
-      padding: 10px 14px;
+      padding: 11px 14px;
       background: transparent;
-      border: 1px solid var(--mc);
+      border: 1px solid var(--mc-glow);
       color: var(--mc);
       font-family: monospace;
-      font-size: 14px;
+      font-size: 15px;
       text-align: center;
       outline: none;
-      letter-spacing: 3px;
-      margin-bottom: 16px;
+      letter-spacing: 4px;
+      margin-bottom: 18px;
+      transition: border-color 0.2s, box-shadow 0.2s;
     }
-
-    .modal-input::placeholder { color: var(--mc); opacity: 0.35; letter-spacing: 1px; }
+    .modal-input:focus {
+      border-color: var(--mc);
+      box-shadow: 0 0 10px var(--mc-glow);
+    }
+    .modal-input::placeholder { color: var(--mc); opacity: 0.3; letter-spacing: 1px; }
 
     .modal-btns { display: flex; gap: 10px; justify-content: center; }
 
     .modal-btn {
-      padding: 9px 22px;
+      padding: 9px 24px;
       background: transparent;
       border: 1px solid var(--mc);
       color: var(--mc);
@@ -152,79 +230,66 @@
       font-family: monospace;
       font-size: 13px;
       letter-spacing: 1px;
+      transition: background 0.2s, box-shadow 0.2s, color 0.2s;
+      position: relative;
+      overflow: hidden;
     }
-
     .modal-btn:hover { opacity: 0.75; }
     .modal-btn.cancel { opacity: 0.45; }
+    .modal-err { font-size: 12px; color: #ff4444; margin-bottom: 12px; height: 16px; letter-spacing: 1px; }
 
-    .modal-err {
-      font-size: 12px;
-      color: #ff4444;
-      margin-bottom: 12px;
-      height: 16px;
-      letter-spacing: 1px;
-    }
+    .confirm-msg { color: var(--mc); font-size: 13px; margin-bottom: 20px; line-height: 1.7; white-space: pre-line; }
 
-    .confirm-msg { color: var(--mc); font-size: 13px; margin-bottom: 20px; line-height: 1.6; white-space: pre-line; }
-
-    /* ADMIN PANEL */
+    /* ── ADMIN PANEL ── */
     .admin-panel-box {
-      border: 1px solid #00ffcc;
-      box-shadow: 0 0 20px #00ffcc33;
-      padding: 24px;
+      border: 1px solid var(--tc);
+      box-shadow: 0 0 24px var(--tc-glow), 0 0 60px var(--tc-faint);
+      padding: 26px;
       width: 90%;
-      max-width: 460px;
+      max-width: 500px;
       background: #000;
       max-height: 80vh;
       overflow-y: auto;
       text-align: left;
     }
-
-    .admin-panel-box h3 {
-      color: #00ffcc;
-      letter-spacing: 3px;
-      text-align: center;
-      margin-bottom: 16px;
-      text-shadow: 0 0 8px #00ffcc;
-    }
-
-    .admin-item { border-bottom: 1px solid #00ffcc22; padding: 10px 0; }
-    .admin-code { color: #00ffff; font-weight: bold; font-size: 16px; }
-    .admin-name { font-size: 14px; margin-top: 2px; }
-    .admin-desc { font-size: 12px; opacity: 0.6; margin-top: 2px; }
-    .admin-url  { font-size: 11px; opacity: 0.45; margin-top: 2px; word-break: break-all; }
+    .admin-panel-box h3 { color: var(--tc); letter-spacing: 3px; text-align: center; margin-bottom: 16px; text-shadow: 0 0 10px var(--tc); }
+    .admin-item { border-bottom: 1px solid var(--tc-dim); padding: 10px 0; }
+    .admin-code { color: var(--tc); font-weight: bold; font-size: 16px; }
+    .admin-name { font-size: 14px; margin-top: 2px; color: var(--tc); }
+    .admin-desc { font-size: 12px; opacity: 0.6; margin-top: 2px; color: var(--tc); }
+    .admin-url  { font-size: 11px; opacity: 0.4; margin-top: 2px; word-break: break-all; color: var(--tc); }
 
     .close-modal-btn {
       display: block;
       margin: 20px auto 0;
-      padding: 9px 28px;
+      padding: 9px 30px;
       background: transparent;
-      border: 1px solid #00ffcc;
-      color: #00ffcc;
+      border: 1px solid var(--tc);
+      color: var(--tc);
       cursor: pointer;
       font-family: monospace;
       font-size: 13px;
       letter-spacing: 1px;
+      transition: background 0.2s, box-shadow 0.2s, color 0.2s;
     }
+    .close-modal-btn:hover { background: var(--tc-faint); }
 
-    .close-modal-btn:hover { background: #00ffcc18; }
-
-    /* OWNER PORTAL */
+    /* ── OWNER PORTAL ── */
     #ownerOverlay {
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.93);
-      z-index: 200;
+      background: rgba(0,0,0,0.95);
+      z-index: 300;
       overflow-y: auto;
       padding: 30px 12px;
     }
 
     #ownerPanel {
-      max-width: 740px;
+      max-width: 820px;
       margin: 0 auto;
       border: 1px solid #ffcc00;
-      box-shadow: 0 0 24px #ffcc0044;
+      box-shadow: 0 0 30px #ffcc0044, 0 0 80px #ffcc0011;
       padding: 28px;
       text-align: left;
       background: #000;
@@ -232,10 +297,10 @@
 
     #ownerPanel h2 {
       color: #ffcc00;
-      letter-spacing: 3px;
+      letter-spacing: 4px;
       text-align: center;
       margin-bottom: 24px;
-      font-size: 16px;
+      font-size: 17px;
       text-shadow: 0 0 10px #ffcc00;
     }
 
@@ -248,27 +313,26 @@
       margin: 20px 0 14px;
     }
 
-    .add-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
-
+    .add-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     .add-grid .span2 { grid-column: span 2; }
 
     .field-input {
       width: 100%;
       padding: 9px 12px;
       background: transparent;
-      border: 1px solid #ffcc0055;
+      border: 1px solid #ffcc0044;
       color: #ffcc00;
       font-family: monospace;
       font-size: 13px;
       outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
     }
-
-    .field-input::placeholder { color: #ffcc0040; }
-    .field-input:focus { border-color: #ffcc00; }
+    .field-input::placeholder { color: #ffcc0035; }
+    .field-input:focus {
+      border-color: #ffcc00;
+      box-shadow: 0 0 10px #ffcc0033;
+      background: #ffcc0008;
+    }
 
     .add-btn {
       width: 100%;
@@ -281,63 +345,88 @@
       font-size: 13px;
       letter-spacing: 1px;
     }
-
     .add-btn:hover { background: #ffcc0018; }
 
-    .form-msg { font-size: 12px; letter-spacing: 1px; margin-top: 8px; height: 16px; }
-    .form-msg.ok  { color: #00ffcc; }
+    .form-msg { font-size: 12px; letter-spacing: 1px; margin-top: 8px; height: 16px; transition: all 0.2s; }
+    .form-msg.ok  { color: #00ff99; }
     .form-msg.err { color: #ff4444; }
 
+    /* ── TABLE ── */
     .rtable { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 4px; }
-
     .rtable th {
       font-size: 11px; letter-spacing: 1px;
-      color: #ffcc0066; text-align: left;
+      color: #ffcc0055; text-align: left;
       padding: 6px 8px; border-bottom: 1px solid #ffcc0022;
     }
+    .rtable td { padding: 9px 8px; border-bottom: 1px solid #ffcc0015; vertical-align: middle; color: #ffcc00; transition: background 0.15s; }
+    .rtable tr:hover td { background: #ffcc000d; }
 
-    .rtable td { padding: 8px 8px; border-bottom: 1px solid #ffcc0015; vertical-align: middle; color: #ffcc00; }
-    .rtable tr:hover td { background: #ffcc000c; }
+    .col-code { color: #00ffff; font-weight: bold; font-size: 15px; white-space: nowrap; text-shadow: 0 0 6px #00ffff55; }
+    .col-url  { font-size: 11px; opacity: 0.45; word-break: break-all; }
 
-    .col-code { color: #00ffff; font-weight: bold; font-size: 15px; }
-    .col-url  { font-size: 11px; opacity: 0.5; word-break: break-all; }
+    .visit-badge {
+      display: inline-block;
+      background: #ffcc0015;
+      border: 1px solid #ffcc0044;
+      color: #ffcc00;
+      font-size: 12px;
+      padding: 2px 10px;
+      letter-spacing: 1px;
+      min-width: 40px;
+      text-align: center;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .rtable tr:hover .visit-badge { background: #ffcc0025; border-color: #ffcc0077; }
 
     .edit-field {
       background: transparent;
-      border: 1px solid #ffcc0055;
+      border: 1px solid #ffcc0044;
       color: #ffcc00;
       padding: 5px 8px;
       font-family: monospace;
       font-size: 12px;
       width: 100%;
       outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
     }
-
-    .edit-field:focus { border-color: #ffcc00; }
+    .edit-field:focus { border-color: #ffcc00; box-shadow: 0 0 8px #ffcc0033; }
 
     .act-btns { display: flex; gap: 6px; }
 
     .act-btn {
-      padding: 5px 10px;
+      padding: 5px 11px;
       font-size: 11px;
       font-family: monospace;
       cursor: pointer;
       background: transparent;
       letter-spacing: 0.5px;
       white-space: nowrap;
+      transition: background 0.18s, color 0.18s, box-shadow 0.18s;
     }
-
     .act-btn.edit   { border: 1px solid #ffcc00; color: #ffcc00; }
     .act-btn.save   { border: 1px solid #00ffcc; color: #00ffcc; }
     .act-btn.del    { border: 1px solid #ff4444; color: #ff4444; }
     .act-btn.cancel { border: 1px solid #ffcc0055; color: #ffcc0077; }
     .act-btn:hover  { opacity: 0.75; }
 
-    .no-routes { text-align: center; color: #ffcc0044; padding: 20px; font-size: 13px; }
+    .no-routes { text-align: center; color: #ffcc0033; padding: 24px; font-size: 13px; letter-spacing: 1px; }
+
+    .owner-bottom { display: flex; justify-content: space-between; align-items: center; margin-top: 28px; }
+
+    .reset-visits-btn {
+      padding: 8px 18px;
+      background: transparent;
+      border: 1px solid #ff444033;
+      color: #ff444066;
+      cursor: pointer;
+      font-family: monospace;
+      font-size: 11px;
+      letter-spacing: 1px;
+      transition: border-color 0.2s, color 0.2s, box-shadow 0.2s;
+    }
+    .reset-visits-btn:hover { border-color: #ff4444; color: #ff4444; box-shadow: 0 0 10px #ff444433; }
 
     .close-owner-btn {
-      display: block;
-      margin: 28px auto 0;
       padding: 10px 36px;
       background: transparent;
       border: 1px solid #ffcc00;
@@ -347,7 +436,6 @@
       font-size: 13px;
       letter-spacing: 2px;
     }
-
     .close-owner-btn:hover { background: #ffcc0018; }
   </style>
 </head>
@@ -355,6 +443,16 @@
 
 <canvas id="matrix"></canvas>
 
+<!-- THEME SWITCHER -->
+<div class="theme-bar">
+  <span class="theme-label">THEME</span>
+  <div class="theme-dot dot-cyan  active" title="Cyan"  onclick="setTheme('cyan')"></div>
+  <div class="theme-dot dot-green"        title="Green" onclick="setTheme('green')"></div>
+  <div class="theme-dot dot-red"          title="Red"   onclick="setTheme('red')"></div>
+  <div class="theme-dot dot-amber"        title="Amber" onclick="setTheme('amber')"></div>
+</div>
+
+<!-- MAIN TERMINAL -->
 <div class="container" id="mainContainer">
   <h1>ACCESS TERMINAL</h1>
   <input class="main-input" id="code" type="text" placeholder="ENTER CODE" maxlength="10"
@@ -363,14 +461,13 @@
   <div id="status"></div>
 </div>
 
-<div class="bottom-btns">
-  <button class="portal-btn gold" onclick="openOwnerAuth()">Owner Portal</button>
-  <button class="portal-btn cyan" onclick="openAdminAuth()">Admin Portal</button>
-</div>
+<!-- PORTAL BUTTONS -->
+<button class="portal-btn owner" onclick="openOwnerAuth()">Owner Portal</button>
+<button class="portal-btn admin" onclick="openAdminAuth()">Admin Portal</button>
 
-<!-- ADMIN AUTH MODAL -->
+<!-- ADMIN AUTH -->
 <div class="modal-overlay" id="adminAuthModal">
-  <div class="modal-box cyan-modal">
+  <div class="modal-box theme-modal">
     <h3>ADMIN ACCESS</h3>
     <div class="modal-err" id="adminAuthErr"></div>
     <input class="modal-input" id="adminPassInput" type="password" placeholder="PASSWORD"
@@ -382,7 +479,7 @@
   </div>
 </div>
 
-<!-- ADMIN PANEL MODAL -->
+<!-- ADMIN PANEL -->
 <div class="modal-overlay" id="adminOverlay">
   <div class="admin-panel-box">
     <h3>ADMIN DATABASE</h3>
@@ -391,7 +488,7 @@
   </div>
 </div>
 
-<!-- OWNER AUTH MODAL -->
+<!-- OWNER AUTH -->
 <div class="modal-overlay" id="ownerAuthModal">
   <div class="modal-box gold-modal">
     <h3>OWNER ACCESS</h3>
@@ -405,7 +502,7 @@
   </div>
 </div>
 
-<!-- CONFIRM DELETE MODAL -->
+<!-- CONFIRM DELETE -->
 <div class="modal-overlay" id="confirmModal" style="z-index:400;">
   <div class="modal-box gold-modal">
     <h3>CONFIRM DELETE</h3>
@@ -418,10 +515,9 @@
 </div>
 
 <!-- OWNER PORTAL -->
-<div id="ownerOverlay" style="z-index:300;">
+<div id="ownerOverlay">
   <div id="ownerPanel">
-    <h2>OWNER PORTAL</h2>
-
+    <h2>&#9670; OWNER PORTAL &#9670;</h2>
     <div class="section-label">ADD NEW ROUTE</div>
     <div class="add-grid">
       <input class="field-input" id="nCode" type="text" placeholder="Code  (e.g. 1234)" maxlength="12">
@@ -433,26 +529,28 @@
         <div class="form-msg" id="addMsg"></div>
       </div>
     </div>
-
     <div class="section-label">MANAGE ROUTES</div>
     <table class="rtable">
       <thead>
         <tr>
-          <th style="width:70px">CODE</th>
+          <th style="width:65px">CODE</th>
           <th>NAME</th>
           <th>URL / DESC</th>
-          <th style="width:110px">ACTIONS</th>
+          <th style="width:60px;text-align:center;">VISITS</th>
+          <th style="width:115px">ACTIONS</th>
         </tr>
       </thead>
       <tbody id="routesTbody"></tbody>
     </table>
-
-    <button class="close-owner-btn" onclick="closeOwner()">CLOSE PORTAL</button>
+    <div class="owner-bottom">
+      <button class="reset-visits-btn" onclick="resetAllVisits()">RESET ALL VISITS</button>
+      <button class="close-owner-btn" onclick="closeOwner()">CLOSE PORTAL</button>
+    </div>
   </div>
 </div>
 
 <script>
-/* MATRIX */
+/* ── MATRIX ── */
 const canvas = document.getElementById("matrix");
 const ctx    = canvas.getContext("2d");
 canvas.width  = window.innerWidth;
@@ -460,58 +558,82 @@ canvas.height = window.innerHeight;
 const fontSize = 14;
 const columns  = Math.floor(canvas.width / fontSize);
 const drops    = Array(columns).fill(1);
+let matColor   = "#00ffcc";
+
 (function drawMatrix() {
   ctx.fillStyle = "rgba(0,0,0,0.05)";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
-  ctx.fillStyle = "#00ffcc";
+  ctx.fillStyle = matColor;
   ctx.font = fontSize + "px monospace";
   drops.forEach((y, i) => {
     ctx.fillText(Math.random() > 0.5 ? "1" : "0", i * fontSize, y * fontSize);
     if (y * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
     drops[i]++;
   });
-  setTimeout(drawMatrix, 50);
+  setTimeout(drawMatrix, 45);
 })();
 
-/* DATA */
-const STORE = "term_routes_v2";
+/* ── THEME ── */
+const THEMES = {
+  cyan:  { cls: "theme-cyan",  mat: "#00ffcc" },
+  green: { cls: "theme-green", mat: "#00ff41" },
+  red:   { cls: "theme-red",   mat: "#ff2222" },
+  amber: { cls: "theme-amber", mat: "#ffb000" },
+};
+
+function setTheme(name) {
+  const t = THEMES[name];
+  if (!t) return;
+  document.documentElement.className = t.cls;
+  matColor = t.mat;
+  document.querySelectorAll(".theme-dot").forEach(d => d.classList.remove("active"));
+  document.querySelector(".dot-" + name).classList.add("active");
+  localStorage.setItem("term_theme", name);
+}
+(function() {
+  const saved = localStorage.getItem("term_theme");
+  if (saved && THEMES[saved]) setTheme(saved);
+})();
+
+/* ── DATA ── */
+const STORE = "term_routes_v2", VISIT_STORE = "term_visits_v1";
 const DEFAULTS = {
-  "2010": { name: "MultiMovies",  url: "https://multimovies.fyi", desc: "Movie streaming website (free HD content)" },
-  "1111": { name: "Hacker AI",    url: "https://hackerai.co/", desc: "AI chatbot & hacking-style assistant tool" },
-  "1212": { name: "NoteGPT",      url: "https://notegpt.io", desc: "AI notes summarizer & productivity tool" },
-  "1819": { name: "TBCPL",        url: "https://tbcpl.lol/", desc: "Online library & digital resources" },
-  "2222": { name: "WhatsMyName",  url: "https://whatsmyname.me/", desc: "Username search across social platforms" },
-  "4111": { name: "FMHY",         url: "https://fmhy.net/", desc: "Huge collection of free tools & resources" },
-  "8787": { name: "Moewalls",     url: "https://moewalls.com/", desc: "Live wallpapers for desktop" },
-  "4545": { name: "BugMeNot",     url: "https://bugmenot.com/", desc: "Shared logins for websites" },
-  "7777": { name: "ElevenLabs",   url: "https://elevenlabs.io/app/speech-to-text", desc: "AI voice & speech tools" },
+  "2010": { name: "MultiMovies",  url: "https://multimovies.fyi",                                                                 desc: "Movie streaming website (free HD content)" },
+  "1111": { name: "Hacker AI",    url: "https://hackerai.co/",                                                                    desc: "AI chatbot & hacking-style assistant tool" },
+  "1212": { name: "NoteGPT",      url: "https://notegpt.io",                                                                      desc: "AI notes summarizer & productivity tool" },
+  "1819": { name: "TBCPL",        url: "https://tbcpl.lol/",                                                                      desc: "Online library & digital resources" },
+  "2222": { name: "WhatsMyName",  url: "https://whatsmyname.me/",                                                                 desc: "Username search across social platforms" },
+  "4111": { name: "FMHY",         url: "https://fmhy.net/",                                                                       desc: "Huge collection of free tools & resources" },
+  "8787": { name: "Moewalls",     url: "https://moewalls.com/",                                                                   desc: "Live wallpapers for desktop" },
+  "4545": { name: "BugMeNot",     url: "https://bugmenot.com/",                                                                   desc: "Shared logins for websites" },
+  "7777": { name: "ElevenLabs",   url: "https://elevenlabs.io/app/speech-to-text",                                               desc: "AI voice & speech tools" },
   "9999": { name: "Drive Vault",  url: "https://drive.google.com/file/d/1Dquo4RZdefNapARHtKG7jgteNK9F7aCf/view?usp=drive_link", desc: "Private Google Drive storage file" }
 };
 
-let routes = {};
+let routes = {}, visits = {};
 
-function loadRoutes() {
-  try {
-    const s = localStorage.getItem(STORE);
-    routes = s ? JSON.parse(s) : JSON.parse(JSON.stringify(DEFAULTS));
-  } catch(e) { routes = JSON.parse(JSON.stringify(DEFAULTS)); }
+function loadData() {
+  try { const s = localStorage.getItem(STORE); routes = s ? JSON.parse(s) : JSON.parse(JSON.stringify(DEFAULTS)); } catch(e) { routes = JSON.parse(JSON.stringify(DEFAULTS)); }
+  try { const v = localStorage.getItem(VISIT_STORE); visits = v ? JSON.parse(v) : {}; } catch(e) { visits = {}; }
 }
+function saveRoutes() { try { localStorage.setItem(STORE, JSON.stringify(routes)); } catch(e) {} }
+function saveVisits() { try { localStorage.setItem(VISIT_STORE, JSON.stringify(visits)); } catch(e) {} }
+loadData();
 
-function saveRoutes() {
-  try { localStorage.setItem(STORE, JSON.stringify(routes)); } catch(e) {}
-}
-
-loadRoutes();
-
-/* TERMINAL */
+/* ── TERMINAL ── */
 function go() {
   const code   = document.getElementById("code").value.trim();
   const status = document.getElementById("status");
-  status.style.color = "#00ffcc";
-  status.innerText   = "ACCESSING...";
+
+  status.style.color = "var(--tc)";
+  status.innerText = "ACCESSING...";
+
   setTimeout(() => {
     if (routes[code]) {
-      status.innerText = "ACCESS GRANTED";
+      status.innerText = "ACCESS GRANTED \u{1F680}";
+      status.style.color = "var(--tc)";
+      visits[code] = (visits[code] || 0) + 1;
+      saveVisits();
       setTimeout(() => { window.open(routes[code].url, "_blank"); }, 900);
     } else {
       status.style.color = "#ff4444";
@@ -520,89 +642,80 @@ function go() {
       setTimeout(() => {
         document.getElementById("mainContainer").classList.remove("shake");
         status.innerText = "";
-      }, 800);
+      }, 900);
     }
-  }, 800);
+  }, 700);
 }
 
-/* MODAL HELPERS */
-function openModal(id) { document.getElementById(id).classList.add("active"); }
+/* ── MODALS ── */
+function openModal(id)  { document.getElementById(id).classList.add("active"); }
 function closeModal(id) { document.getElementById(id).classList.remove("active"); }
 
-/* ADMIN AUTH */
+/* ── ADMIN ── */
 function openAdminAuth() {
   document.getElementById("adminPassInput").value = "";
   document.getElementById("adminAuthErr").innerText = "";
   openModal("adminAuthModal");
   setTimeout(() => document.getElementById("adminPassInput").focus(), 60);
 }
-
 function submitAdminAuth() {
-  const pw = document.getElementById("adminPassInput").value;
-  if (pw === "1918") {
-    closeModal("adminAuthModal");
-    renderAdmin();
-    openModal("adminOverlay");
+  if (document.getElementById("adminPassInput").value === "1918") {
+    closeModal("adminAuthModal"); renderAdmin(); openModal("adminOverlay");
   } else {
-    document.getElementById("adminAuthErr").innerText = "WRONG PASSWORD";
+    const err = document.getElementById("adminAuthErr");
+    err.innerText = "WRONG PASSWORD";
+    err.style.animation = "none";
+    requestAnimationFrame(() => { err.style.animation = ""; });
     document.getElementById("adminPassInput").value = "";
     document.getElementById("adminPassInput").focus();
   }
 }
-
 function renderAdmin() {
   const keys = Object.keys(routes);
   const list = document.getElementById("adminList");
-  if (!keys.length) {
-    list.innerHTML = '<div style="opacity:.4;text-align:center;padding:16px;font-size:13px;">No routes.</div>';
-    return;
-  }
+  if (!keys.length) { list.innerHTML = '<div style="opacity:.4;text-align:center;padding:16px;font-size:13px;">No routes.</div>'; return; }
   list.innerHTML = keys.map(code => `
     <div class="admin-item">
-      <div class="admin-code">[${esc(code)}]</div>
+      <div class="admin-code">[${esc(code)}] <span style="font-size:11px;opacity:0.45;">${visits[code]||0} visits</span></div>
       <div class="admin-name">${esc(routes[code].name)}</div>
       <div class="admin-desc">${esc(routes[code].desc || "")}</div>
       <div class="admin-url">${esc(routes[code].url)}</div>
     </div>`).join("");
 }
 
-/* OWNER AUTH */
+/* ── OWNER AUTH ── */
 function openOwnerAuth() {
   document.getElementById("ownerPassInput").value = "";
   document.getElementById("ownerAuthErr").innerText = "";
   openModal("ownerAuthModal");
   setTimeout(() => document.getElementById("ownerPassInput").focus(), 60);
 }
-
 function submitOwnerAuth() {
-  const pw = document.getElementById("ownerPassInput").value;
-  if (pw === "19181918") {
-    closeModal("ownerAuthModal");
-    clearAddForm();
-    renderTable();
+  if (document.getElementById("ownerPassInput").value === "19181918") {
+    closeModal("ownerAuthModal"); clearAddForm(); renderTable();
     document.getElementById("ownerOverlay").style.display = "block";
   } else {
-    document.getElementById("ownerAuthErr").innerText = "WRONG PASSWORD";
+    const err = document.getElementById("ownerAuthErr");
+    err.innerText = "WRONG PASSWORD";
+    err.style.animation = "none";
+    requestAnimationFrame(() => { err.style.animation = ""; });
     document.getElementById("ownerPassInput").value = "";
     document.getElementById("ownerPassInput").focus();
   }
 }
-
 function closeOwner() { document.getElementById("ownerOverlay").style.display = "none"; }
 
-/* ADD ROUTE */
+/* ── ADD ROUTE ── */
 function clearAddForm() {
   ["nCode","nName","nUrl","nDesc"].forEach(id => document.getElementById(id).value = "");
   setMsg("addMsg","","");
 }
-
 function setMsg(id, text, type) {
   const el = document.getElementById(id);
   el.textContent = text;
-  el.className = "form-msg" + (type ? " " + type : "");
+  el.className = "form-msg" + (type ? " "+type : "");
   if (text) setTimeout(() => { el.textContent=""; el.className="form-msg"; }, 3500);
 }
-
 function addRoute() {
   const code = document.getElementById("nCode").value.trim();
   const name = document.getElementById("nName").value.trim();
@@ -612,85 +725,74 @@ function addRoute() {
   if (!name) return setMsg("addMsg","Name is required.","err");
   if (!url)  return setMsg("addMsg","URL is required.","err");
   if (!url.startsWith("http")) return setMsg("addMsg","URL must start with http.","err");
-  if (routes[code]) return setMsg("addMsg", 'Code "'+code+'" already exists.', "err");
-  routes[code] = { name, url, desc };
-  saveRoutes();
+  if (routes[code]) return setMsg("addMsg",'Code "'+code+'" already exists.',"err");
+  routes[code] = { name, url, desc }; visits[code] = 0;
+  saveRoutes(); saveVisits();
   setMsg("addMsg","Route ["+code+"] added!","ok");
-  clearAddForm();
-  renderTable();
+  clearAddForm(); renderTable();
 }
 
-/* DELETE */
+/* ── DELETE ── */
 let pendingDel = null;
 function deleteRoute(code) {
   pendingDel = code;
-  document.getElementById("confirmMsg").innerText =
-    'Delete [' + code + '] \u2192 ' + routes[code].name + '?\nThis cannot be undone.';
+  document.getElementById("confirmMsg").innerText = 'Delete ['+code+'] \u2192 '+routes[code].name+'?\nThis cannot be undone.';
   document.getElementById("confirmOkBtn").onclick = function() {
-    delete routes[pendingDel];
-    saveRoutes();
-    closeModal("confirmModal");
-    renderTable();
+    delete routes[pendingDel]; delete visits[pendingDel];
+    saveRoutes(); saveVisits(); closeModal("confirmModal"); renderTable();
   };
   openModal("confirmModal");
 }
 
-/* EDIT */
+/* ── RESET VISITS ── */
+function resetAllVisits() {
+  if (!Object.keys(visits).some(k => visits[k] > 0)) return;
+  document.getElementById("confirmMsg").innerText = "Reset visit counts for ALL routes to zero?";
+  document.getElementById("confirmOkBtn").onclick = function() {
+    Object.keys(visits).forEach(k => visits[k] = 0);
+    saveVisits(); closeModal("confirmModal"); renderTable();
+  };
+  openModal("confirmModal");
+}
+
+/* ── EDIT ── */
 function startEdit(code) {
   const r = routes[code];
   const row = document.getElementById("row-"+code);
   row.innerHTML =
-    '<td class="col-code">'+esc(code)+'</td>' +
-    '<td><input class="edit-field" id="e-name-'+code+'" value="'+esc(r.name)+'" placeholder="Name"></td>' +
-    '<td>' +
-      '<input class="edit-field" id="e-url-'+code+'" value="'+esc(r.url)+'" placeholder="URL" style="margin-bottom:4px;">' +
-      '<input class="edit-field" id="e-desc-'+code+'" value="'+esc(r.desc||'')+'" placeholder="Desc">' +
-    '</td>' +
-    '<td><div class="act-btns">' +
-      '<button class="act-btn save" onclick="saveEdit(\''+code+'\')">SAVE</button>' +
-      '<button class="act-btn cancel" onclick="renderTable()">X</button>' +
-    '</div></td>';
+    '<td class="col-code">'+esc(code)+'</td>'+
+    '<td><input class="edit-field" id="e-name-'+code+'" value="'+esc(r.name)+'" placeholder="Name"></td>'+
+    '<td><input class="edit-field" id="e-url-'+code+'" value="'+esc(r.url)+'" placeholder="URL" style="margin-bottom:4px;"><input class="edit-field" id="e-desc-'+code+'" value="'+esc(r.desc||'')+'" placeholder="Desc"></td>'+
+    '<td style="text-align:center;"><span class="visit-badge">'+(visits[code]||0)+'</span></td>'+
+    '<td><div class="act-btns"><button class="act-btn save" onclick="saveEdit(\''+code+'\')">SAVE</button><button class="act-btn cancel" onclick="renderTable()">X</button></div></td>';
 }
-
 function saveEdit(code) {
   const name = document.getElementById("e-name-"+code).value.trim();
   const url  = document.getElementById("e-url-"+code).value.trim();
   const desc = document.getElementById("e-desc-"+code).value.trim();
-  if (!name) return;
-  if (!url || !url.startsWith("http")) return;
-  routes[code] = { name, url, desc };
-  saveRoutes();
-  renderTable();
+  if (!name || !url || !url.startsWith("http")) return;
+  routes[code] = { name, url, desc }; saveRoutes(); renderTable();
 }
 
-/* TABLE */
+/* ── TABLE ── */
 function renderTable() {
   const tbody = document.getElementById("routesTbody");
-  const keys = Object.keys(routes);
-  if (!keys.length) {
-    tbody.innerHTML = '<tr><td colspan="4" class="no-routes">No routes yet. Add one above.</td></tr>';
-    return;
-  }
+  const keys  = Object.keys(routes);
+  if (!keys.length) { tbody.innerHTML = '<tr><td colspan="5" class="no-routes">No routes yet. Add one above.</td></tr>'; return; }
+  keys.sort((a,b) => (visits[b]||0) - (visits[a]||0));
   tbody.innerHTML = keys.map(code =>
-    '<tr id="row-'+code+'">' +
-      '<td class="col-code">'+esc(code)+'</td>' +
-      '<td>'+esc(routes[code].name)+'</td>' +
-      '<td>' +
-        '<div class="col-url">'+esc(routes[code].url)+'</div>' +
-        '<div style="font-size:11px;opacity:0.45;margin-top:2px;">'+esc(routes[code].desc||"")+'</div>' +
-      '</td>' +
-      '<td><div class="act-btns">' +
-        '<button class="act-btn edit" onclick="startEdit(\''+code+'\')">EDIT</button>' +
-        '<button class="act-btn del" onclick="deleteRoute(\''+code+'\')">DEL</button>' +
-      '</div></td>' +
+    '<tr id="row-'+code+'">'+
+      '<td class="col-code">'+esc(code)+'</td>'+
+      '<td>'+esc(routes[code].name)+'</td>'+
+      '<td><div class="col-url">'+esc(routes[code].url)+'</div><div style="font-size:11px;opacity:0.4;margin-top:2px;">'+esc(routes[code].desc||"")+'</div></td>'+
+      '<td style="text-align:center;"><span class="visit-badge">'+(visits[code]||0)+'</span></td>'+
+      '<td><div class="act-btns"><button class="act-btn edit" onclick="startEdit(\''+code+'\')">EDIT</button><button class="act-btn del" onclick="deleteRoute(\''+code+'\')">DEL</button></div></td>'+
     '</tr>'
   ).join("");
 }
 
 function esc(str) {
-  return String(str)
-    .replace(/&/g,"&amp;").replace(/"/g,"&quot;")
-    .replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/'/g,"&#39;");
+  return String(str).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/'/g,"&#39;");
 }
 </script>
 </body>
