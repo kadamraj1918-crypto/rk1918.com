@@ -3,169 +3,327 @@
 <head>
   <title>ACCESS TERMINAL</title>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap');
+
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --tc:      #00ffcc;
-      --tc-dim:  #00ffcc55;
-      --tc-glow: #00ffcc44;
-      --tc-faint:#00ffcc15;
-      --tc-hard: #00ffcccc;
+      --tc:      #00e5ff;
+      --tc-dim:  #00e5ff44;
+      --tc-glow: #00e5ff33;
+      --tc-faint:#00e5ff11;
+      --bg:      #080c10;
+      --panel:   #0d1117;
     }
-    :root.theme-green { --tc:#00ff41; --tc-dim:#00ff4155; --tc-glow:#00ff4144; --tc-faint:#00ff4115; }
-    :root.theme-red   { --tc:#ff2222; --tc-dim:#ff222255; --tc-glow:#ff222244; --tc-faint:#ff222215; }
-    :root.theme-amber { --tc:#ffb000; --tc-dim:#ffb00055; --tc-glow:#ffb00044; --tc-faint:#ffb00015; }
-    :root.theme-cyan  { --tc:#00ffcc; --tc-dim:#00ffcc55; --tc-glow:#00ffcc44; --tc-faint:#00ffcc15; }
+    :root.theme-green { --tc:#00ff41; --tc-dim:#00ff4144; --tc-glow:#00ff4133; --tc-faint:#00ff4111; }
+    :root.theme-red   { --tc:#ff2233; --tc-dim:#ff223344; --tc-glow:#ff223333; --tc-faint:#ff223311; }
+    :root.theme-amber { --tc:#ffb000; --tc-dim:#ffb00044; --tc-glow:#ffb00033; --tc-faint:#ffb00011; }
+    :root.theme-cyan  { --tc:#00e5ff; --tc-dim:#00e5ff44; --tc-glow:#00e5ff33; --tc-faint:#00e5ff11; }
 
-    body {
+    html, body {
+      height: 100%;
+      background: var(--bg);
+      color: var(--tc);
+      font-family: 'Share Tech Mono', monospace;
       overflow: hidden;
-      background: #000;
-      color: var(--tc);
-      font-family: monospace;
-      text-align: center;
     }
 
+    /* ── GRID BACKGROUND ── */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(var(--tc-faint) 1px, transparent 1px),
+        linear-gradient(90deg, var(--tc-faint) 1px, transparent 1px);
+      background-size: 48px 48px;
+      pointer-events: none;
+      z-index: 0;
+    }
 
-    canvas { position: fixed; top: 0; left: 0; z-index: -1; }
+    /* vignette */
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.75) 100%);
+      pointer-events: none;
+      z-index: 0;
+    }
 
+    /* ── LAYOUT ── */
+    .page {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
 
-    /* ── CONTAINER ── */
-    .container { margin-top: 13%; }
+    /* ── HEADER ── */
+    .site-label {
+      font-size: 11px;
+      letter-spacing: 6px;
+      opacity: 0.55;
+      margin-bottom: 12px;
+      color: var(--tc);
+    }
 
-    /* ── TITLE ── */
-    h1 {
+    .site-title {
+      font-family: 'Orbitron', monospace;
+      font-weight: 900;
+      font-size: clamp(48px, 10vw, 88px);
+      letter-spacing: 8px;
+      color: var(--tc);
+      text-shadow:
+        0 0 10px var(--tc),
+        0 0 30px var(--tc),
+        0 0 60px var(--tc-dim),
+        0 0 120px var(--tc-glow);
+      animation: glitch 4s ease infinite;
+      margin-bottom: 16px;
+    }
+
+    @keyframes glitch {
+      0%, 90%, 100% {
+        text-shadow: 0 0 20px var(--tc), 0 0 40px var(--tc-dim), 0 0 80px var(--tc-glow);
+      }
+      92% {
+        text-shadow: -3px 0 rgba(255,0,80,0.9), 3px 0 rgba(140,0,255,0.9), 0 0 20px var(--tc);
+      }
+      94% {
+        text-shadow:  3px 0 rgba(255,0,80,0.9), -3px 0 rgba(140,0,255,0.9), 0 0 20px var(--tc);
+      }
+      96% {
+        text-shadow: -2px 0 rgba(255,0,80,0.6), 2px 0 rgba(140,0,255,0.6), 0 0 20px var(--tc);
+      }
+    }
+
+    .site-sub {
+      font-size: 11px;
+      letter-spacing: 5px;
+      opacity: 0.45;
+      margin-bottom: 40px;
+      color: var(--tc);
+    }
+
+    /* ── PANEL with corner brackets ── */
+    .panel {
+      position: relative;
+      width: 100%;
+      max-width: 420px;
+      padding: 32px 36px;
+      background: rgba(13,17,23,0.85);
+      backdrop-filter: blur(4px);
+    }
+
+    /* corner brackets */
+    .panel::before, .panel::after,
+    .panel .corner-bl, .panel .corner-br {
+      content: "";
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      border-color: var(--tc);
+      border-style: solid;
+      opacity: 0.8;
+    }
+    .panel::before  { top: 0; left: 0;  border-width: 2px 0 0 2px; }
+    .panel::after   { top: 0; right: 0; border-width: 2px 2px 0 0; }
+    .panel .corner-bl { bottom: 0; left: 0;  border-width: 0 0 2px 2px; }
+    .panel .corner-br { bottom: 0; right: 0; border-width: 0 2px 2px 0; }
+
+    /* ── STATUS DOT ── */
+    .status-dot-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 24px;
+      font-size: 11px;
       letter-spacing: 3px;
-      font-size: 26px;
-      color: var(--tc);
-      margin-bottom: 28px;
-      text-shadow: 0 0 10px var(--tc);
     }
+
+    .dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--tc);
+      box-shadow: 0 0 6px var(--tc), 0 0 12px var(--tc);
+      animation: dotPulse 1.8s ease-in-out infinite;
+      flex-shrink: 0;
+    }
+
+    @keyframes dotPulse {
+      0%,100% { opacity: 1; box-shadow: 0 0 6px var(--tc), 0 0 12px var(--tc); }
+      50%      { opacity: 0.4; box-shadow: 0 0 2px var(--tc); }
+    }
+
+    .dot.granted { background: #00ff99; box-shadow: 0 0 8px #00ff99; animation: none; }
+    .dot.denied  { background: #ff3333; box-shadow: 0 0 8px #ff3333; animation: none; }
 
     /* ── INPUT ── */
-    .main-input {
-      padding: 13px 22px;
-      background: transparent;
+    .input-label {
+      font-size: 10px;
+      letter-spacing: 4px;
+      opacity: 0.5;
+      margin-bottom: 10px;
+    }
+
+    .code-input {
+      width: 100%;
+      padding: 16px 20px;
+      background: rgba(0,0,0,0.5);
       border: 1px solid var(--tc-dim);
       color: var(--tc);
+      font-family: 'Orbitron', monospace;
+      font-size: 20px;
+      letter-spacing: 10px;
       text-align: center;
       outline: none;
-      font-family: monospace;
-      font-size: 18px;
-      letter-spacing: 4px;
-      width: 240px;
-      transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+      margin-bottom: 14px;
+      transition: border-color 0.2s, box-shadow 0.2s;
     }
-    .main-input::placeholder { color: var(--tc-dim); letter-spacing: 2px; }
-    .main-input:focus {
+
+    .code-input::placeholder {
+      content: "— — — — —";
+      color: var(--tc-dim);
+      letter-spacing: 8px;
+      font-size: 18px;
+    }
+
+    .code-input {
+      box-shadow: 0 0 10px var(--tc-glow), inset 0 0 10px var(--tc-faint);
+      transition: box-shadow 0.3s ease, border-color 0.3s ease;
+    }
+    .code-input:focus {
       border-color: var(--tc);
-      box-shadow: 0 0 12px var(--tc-glow), inset 0 0 8px var(--tc-faint);
-      background: var(--tc-faint);
+      box-shadow: 0 0 20px var(--tc-dim), 0 0 40px var(--tc-glow), inset 0 0 15px var(--tc-faint);
     }
 
     /* ── EXECUTE BUTTON ── */
-    .execute-btn {
-      display: block;
-      margin: 16px auto 0;
-      padding: 10px 30px;
+    .exec-btn {
+      width: 100%;
+      padding: 16px;
       background: transparent;
-      border: 1px solid var(--tc);
+      border: 1px solid var(--tc-dim);
       color: var(--tc);
+      font-family: 'Orbitron', monospace;
+      font-size: 12px;
+      letter-spacing: 5px;
       cursor: pointer;
-      font-family: monospace;
-      font-size: 14px;
-      letter-spacing: 2px;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.2s, box-shadow 0.2s;
     }
-    .execute-btn:hover { background: var(--tc-faint); }
 
-    /* ── STATUS ── */
-    #status {
-      margin-top: 22px;
-      height: 26px;
-      font-size: 15px;
-      letter-spacing: 3px;
+    .exec-btn::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: var(--tc);
+      transform: translateX(-101%);
+      transition: transform 0.35s ease;
+      z-index: 0;
+    }
+
+    .exec-btn span { position: relative; z-index: 1; transition: color 0.35s; }
+
+    .exec-btn { box-shadow: 0 0 15px var(--tc-glow); transition: box-shadow 0.3s ease, border-color 0.2s; }
+    .exec-btn:hover { border-color: var(--tc); box-shadow: 0 0 30px var(--tc-dim), 0 0 60px var(--tc-glow); transform: translateY(-1px); }
+    .exec-btn:active { transform: translateY(0); }
+    .exec-btn:hover::before { transform: translateX(0); }
+    .exec-btn:hover span { color: #000; }
+    .exec-btn:active { transform: scale(0.98); }
+
+    /* ── STATUS TEXT ── */
+    #statusText {
+      margin-top: 16px;
+      height: 18px;
+      font-size: 11px;
+      letter-spacing: 4px;
+      text-align: center;
       transition: color 0.2s;
     }
 
-
     /* ── SHAKE ── */
-    .shake { animation: shake 0.4s cubic-bezier(.36,.07,.19,.97); }
+    .shake { animation: shake 0.4s ease; }
     @keyframes shake {
-      10%,90% { transform: translateX(-3px); }
-      20%,80% { transform: translateX(5px); }
-      30%,50%,70% { transform: translateX(-6px); }
-      40%,60% { transform: translateX(6px); }
+      0%,100% { transform: translateX(0); }
+      20%     { transform: translateX(-8px); }
+      40%     { transform: translateX(8px); }
+      60%     { transform: translateX(-6px); }
+      80%     { transform: translateX(6px); }
     }
+
+    /* ── FOOTER ── */
+    .footer {
+      position: fixed;
+      bottom: 18px;
+      left: 0; right: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 18px;
+      font-size: 10px;
+      letter-spacing: 3px;
+      z-index: 10;
+    }
+
+    .footer-sep { opacity: 0.25; }
+
+    .footer a, .footer button {
+      background: none;
+      border: none;
+      color: var(--tc);
+      opacity: 0.4;
+      cursor: pointer;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 3px;
+      text-decoration: none;
+      transition: opacity 0.2s, text-shadow 0.2s;
+    }
+    .footer a:hover, .footer button:hover {
+      opacity: 1;
+      text-shadow: 0 0 8px var(--tc);
+    }
+
+    .footer button.owner-link { color: #ffcc00; }
+    .footer button.owner-link:hover { text-shadow: 0 0 8px #ffcc00; }
 
     /* ── THEME BAR ── */
     .theme-bar {
       position: fixed;
-      top: 14px;
-      right: 14px;
+      top: 16px;
+      right: 16px;
       display: flex;
+      align-items: center;
       gap: 10px;
       z-index: 10;
-      align-items: center;
     }
 
-    .theme-label {
-      font-size: 10px;
-      letter-spacing: 2px;
-      opacity: 0.35;
-      color: var(--tc);
-    }
+    .theme-label { font-size: 9px; letter-spacing: 2px; opacity: 0.3; color: var(--tc); }
 
     .theme-dot {
-      width: 18px;
-      height: 18px;
+      width: 14px; height: 14px;
       border-radius: 50%;
       cursor: pointer;
       border: 2px solid transparent;
-      transition: transform 0.2s, box-shadow 0.2s;
+      transition: transform 0.15s, box-shadow 0.15s;
     }
-    .theme-dot:hover { transform: scale(1.4); }
-    .theme-dot.active {
-      border-color: #fff;
-      box-shadow: 0 0 8px currentColor;
-    }
-    .dot-cyan  { background: #00ffcc; }
+    .theme-dot:hover { transform: scale(1.35); }
+    .theme-dot.active { border-color: #fff; box-shadow: 0 0 6px currentColor; }
+    .dot-cyan  { background: #00e5ff; }
     .dot-green { background: #00ff41; }
-    .dot-red   { background: #ff2222; }
+    .dot-red   { background: #ff2233; }
     .dot-amber { background: #ffb000; }
 
-    /* ── PORTAL BUTTONS ── */
-    .portal-btn {
-      position: fixed;
-      bottom: 14px;
-      padding: 8px 18px;
-      background: transparent;
-      cursor: pointer;
-      font-family: monospace;
-      font-size: 12px;
-      letter-spacing: 1px;
-      z-index: 10;
-      transition: box-shadow 0.25s, background 0.25s, opacity 0.25s;
-    }
-
-    .portal-btn.owner {
-      left: 14px;
-      border: 1px solid #ffcc00;
-      color: #ffcc00;
-    }
-    .portal-btn.owner:hover { background: #ffcc0018; }
-
-    .portal-btn.admin {
-      right: 14px;
-      border: 1px solid var(--tc);
-      color: var(--tc);
-      opacity: 0.5;
-    }
-    .portal-btn.admin:hover {
-      opacity: 1;
-      background: var(--tc-faint);
-      box-shadow: 0 0 14px var(--tc-glow);
-    }
-
-    /* ── MODAL SYSTEM ── */
+    /* ══════════════════════════════
+       MODAL SYSTEM
+    ══════════════════════════════ */
     .modal-overlay {
       display: none;
       position: fixed;
@@ -178,35 +336,62 @@
     .modal-overlay.active { display: flex; }
 
     .modal-box {
-      border: 1px solid var(--mc);
-      box-shadow: 0 0 30px var(--mc-glow), 0 0 80px var(--mc-far);
-      padding: 30px 34px;
-      min-width: 320px;
-      max-width: 420px;
+      position: relative;
       width: 90%;
+      max-width: 400px;
+      padding: 32px;
+      background: rgba(8,12,16,0.97);
       text-align: center;
-      background: #000;
-}
+      animation: panelIn 0.2s ease;
+    }
+    @keyframes panelIn {
+      from { transform: scale(0.92); opacity: 0; }
+      to   { transform: scale(1);    opacity: 1; }
+    }
 
-    .modal-box.theme-modal { --mc: var(--tc); --mc-glow: var(--tc-glow); --mc-far: var(--tc-faint); }
-    .modal-box.gold-modal  { --mc: #ffcc00;   --mc-glow: #ffcc0044;      --mc-far: #ffcc0011; }
+    /* corner brackets on modals */
+    .modal-box::before, .modal-box::after,
+    .modal-box .cb, .modal-box .cb2 {
+      content: "";
+      position: absolute;
+      width: 16px; height: 16px;
+      border-color: var(--mc);
+      border-style: solid;
+    }
+    .modal-box::before { top:0; left:0;  border-width:2px 0 0 2px; }
+    .modal-box::after  { top:0; right:0; border-width:2px 2px 0 0; }
+    .modal-box .cb     { bottom:0; left:0;  border-width:0 0 2px 2px; }
+    .modal-box .cb2    { bottom:0; right:0; border-width:0 2px 2px 0; }
+
+    .modal-box.theme-m { --mc: var(--tc); }
+    .modal-box.gold-m  { --mc: #ffcc00; }
 
     .modal-box h3 {
-      letter-spacing: 3px;
+      font-family: 'Orbitron', monospace;
+      font-size: 13px;
+      letter-spacing: 5px;
       color: var(--mc);
-      margin-bottom: 22px;
-      font-size: 15px;
       text-shadow: 0 0 10px var(--mc);
+      margin-bottom: 24px;
+    }
+
+    .modal-err {
+      font-size: 11px;
+      color: #ff4444;
+      letter-spacing: 2px;
+      height: 16px;
+      margin-bottom: 12px;
     }
 
     .modal-input {
       width: 100%;
-      padding: 11px 14px;
-      background: transparent;
-      border: 1px solid var(--mc-glow);
+      padding: 12px 14px;
+      background: rgba(0,0,0,0.6);
+      border: 1px solid var(--mc);
+      border-color: color-mix(in srgb, var(--mc) 40%, transparent);
       color: var(--mc);
-      font-family: monospace;
-      font-size: 15px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 16px;
       text-align: center;
       outline: none;
       letter-spacing: 4px;
@@ -215,301 +400,449 @@
     }
     .modal-input:focus {
       border-color: var(--mc);
-      box-shadow: 0 0 10px var(--mc-glow);
+      box-shadow: 0 0 14px color-mix(in srgb, var(--mc) 30%, transparent);
     }
-    .modal-input::placeholder { color: var(--mc); opacity: 0.3; letter-spacing: 1px; }
+    .modal-input::placeholder { opacity: 0.3; letter-spacing: 2px; }
 
-    .modal-btns { display: flex; gap: 10px; justify-content: center; }
+    .modal-btns { display: flex; gap: 10px; }
 
     .modal-btn {
-      padding: 9px 24px;
+      flex: 1;
+      padding: 11px;
       background: transparent;
       border: 1px solid var(--mc);
       color: var(--mc);
       cursor: pointer;
-      font-family: monospace;
-      font-size: 13px;
-      letter-spacing: 1px;
-      transition: background 0.2s, box-shadow 0.2s, color 0.2s;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 3px;
       position: relative;
       overflow: hidden;
+      transition: color 0.25s;
     }
-    .modal-btn:hover { opacity: 0.75; }
-    .modal-btn.cancel { opacity: 0.45; }
-    .modal-err { font-size: 12px; color: #ff4444; margin-bottom: 12px; height: 16px; letter-spacing: 1px; }
+    .modal-btn::before {
+      content:"";
+      position:absolute;
+      inset:0;
+      background: var(--mc);
+      transform: translateX(-101%);
+      transition: transform 0.25s ease;
+      z-index:0;
+    }
+    .modal-btn span { position: relative; z-index:1; }
+    .modal-btn:hover::before { transform: translateX(0); }
+    .modal-btn:hover span { color: #000; }
+    .modal-btn.cancel { border-color: color-mix(in srgb, var(--mc) 30%, transparent); opacity: 0.5; }
+    .modal-btn.cancel:hover { opacity: 1; }
 
-    .confirm-msg { color: var(--mc); font-size: 13px; margin-bottom: 20px; line-height: 1.7; white-space: pre-line; }
+    .confirm-msg { color: var(--mc); font-size: 13px; margin-bottom: 22px; line-height: 1.7; white-space: pre-line; opacity: 0.85; }
 
-    /* ── ADMIN PANEL ── */
-    .admin-panel-box {
-      border: 1px solid var(--tc);
-      box-shadow: 0 0 24px var(--tc-glow), 0 0 60px var(--tc-faint);
-      padding: 26px;
+    /* ══════════════════════════════
+       ADMIN PANEL
+    ══════════════════════════════ */
+    .admin-box {
+      position: relative;
       width: 90%;
       max-width: 500px;
-      background: #000;
       max-height: 80vh;
       overflow-y: auto;
+      padding: 28px;
+      background: rgba(8,12,16,0.97);
       text-align: left;
+      animation: panelIn 0.2s ease;
+      --mc: var(--tc);
     }
-    .admin-panel-box h3 { color: var(--tc); letter-spacing: 3px; text-align: center; margin-bottom: 16px; text-shadow: 0 0 10px var(--tc); }
-    .admin-item { border-bottom: 1px solid var(--tc-dim); padding: 10px 0; }
-    .admin-code { color: var(--tc); font-weight: bold; font-size: 16px; }
-    .admin-name { font-size: 14px; margin-top: 2px; color: var(--tc); }
-    .admin-desc { font-size: 12px; opacity: 0.6; margin-top: 2px; color: var(--tc); }
-    .admin-url  { font-size: 11px; opacity: 0.4; margin-top: 2px; word-break: break-all; color: var(--tc); }
+    .admin-box::before, .admin-box::after,
+    .admin-box .cb, .admin-box .cb2 {
+      content:""; position:absolute; width:16px; height:16px;
+      border-color: var(--tc); border-style:solid;
+    }
+    .admin-box::before { top:0;left:0; border-width:2px 0 0 2px; }
+    .admin-box::after  { top:0;right:0; border-width:2px 2px 0 0; }
+    .admin-box .cb     { bottom:0;left:0; border-width:0 0 2px 2px; }
+    .admin-box .cb2    { bottom:0;right:0; border-width:0 2px 2px 0; }
 
-    .close-modal-btn {
+    .admin-box h3 {
+      font-family: 'Orbitron', monospace;
+      font-size: 12px;
+      letter-spacing: 5px;
+      color: var(--tc);
+      text-shadow: 0 0 8px var(--tc);
+      margin-bottom: 18px;
+      text-align: center;
+    }
+
+    .admin-item { border-bottom: 1px solid var(--tc-dim); padding: 10px 0; }
+    .admin-code { color: var(--tc); font-weight: bold; font-size: 15px; font-family: 'Orbitron', monospace; }
+    .admin-name { font-size: 13px; margin-top: 3px; opacity: 0.8; }
+    .admin-desc { font-size: 11px; opacity: 0.5; margin-top: 2px; }
+    .admin-url  { font-size: 10px; opacity: 0.35; margin-top: 2px; word-break: break-all; }
+
+    .close-btn {
       display: block;
       margin: 20px auto 0;
-      padding: 9px 30px;
+      padding: 10px 28px;
       background: transparent;
-      border: 1px solid var(--tc);
+      border: 1px solid var(--tc-dim);
       color: var(--tc);
       cursor: pointer;
-      font-family: monospace;
-      font-size: 13px;
-      letter-spacing: 1px;
-      transition: background 0.2s, box-shadow 0.2s, color 0.2s;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 3px;
+      transition: border-color 0.2s, box-shadow 0.2s;
     }
-    .close-modal-btn:hover { background: var(--tc-faint); }
+    .close-btn:hover { border-color: var(--tc); box-shadow: 0 0 12px var(--tc-glow); }
 
-    /* ── OWNER PORTAL ── */
+    /* ══════════════════════════════
+       OWNER PORTAL
+    ══════════════════════════════ */
     #ownerOverlay {
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.95);
+      background: rgba(0,0,0,0.93);
       z-index: 300;
       overflow-y: auto;
-      padding: 30px 12px;
+      padding: 28px 12px;
     }
 
     #ownerPanel {
+      position: relative;
       max-width: 820px;
       margin: 0 auto;
-      border: 1px solid #ffcc00;
-      box-shadow: 0 0 30px #ffcc0044, 0 0 80px #ffcc0011;
-      padding: 28px;
+      padding: 32px;
+      background: rgba(8,12,16,0.98);
       text-align: left;
-      background: #000;
+      animation: panelIn 0.2s ease;
     }
+
+    #ownerPanel::before, #ownerPanel::after,
+    #ownerPanel .cb, #ownerPanel .cb2 {
+      content:""; position:absolute; width:22px; height:22px;
+      border-color: #ffcc00; border-style:solid;
+    }
+    #ownerPanel::before { top:0;left:0; border-width:2px 0 0 2px; }
+    #ownerPanel::after  { top:0;right:0; border-width:2px 2px 0 0; }
+    #ownerPanel .cb     { bottom:0;left:0; border-width:0 0 2px 2px; }
+    #ownerPanel .cb2    { bottom:0;right:0; border-width:0 2px 2px 0; }
 
     #ownerPanel h2 {
+      font-family: 'Orbitron', monospace;
+      font-size: 14px;
+      letter-spacing: 6px;
       color: #ffcc00;
-      letter-spacing: 4px;
+      text-shadow: 0 0 12px #ffcc00, 0 0 30px #ffcc0055;
       text-align: center;
-      margin-bottom: 24px;
-      font-size: 17px;
-      text-shadow: 0 0 10px #ffcc00;
+      margin-bottom: 28px;
     }
 
-    .section-label {
-      font-size: 11px;
-      letter-spacing: 2px;
-      color: #ffcc0077;
-      border-bottom: 1px solid #ffcc0022;
+    .sec-label {
+      font-size: 10px;
+      letter-spacing: 3px;
+      color: #ffcc0055;
+      border-bottom: 1px solid #ffcc0015;
       padding-bottom: 6px;
-      margin: 20px 0 14px;
+      margin: 22px 0 14px;
     }
 
     .add-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     .add-grid .span2 { grid-column: span 2; }
 
-    .field-input {
+    .f-input {
       width: 100%;
-      padding: 9px 12px;
-      background: transparent;
-      border: 1px solid #ffcc0044;
+      padding: 10px 12px;
+      background: rgba(0,0,0,0.5);
+      border: 1px solid #ffcc0033;
       color: #ffcc00;
-      font-family: monospace;
+      font-family: 'Share Tech Mono', monospace;
       font-size: 13px;
-      outline: none;
-      transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
-    }
-    .field-input::placeholder { color: #ffcc0035; }
-    .field-input:focus {
-      border-color: #ffcc00;
-      box-shadow: 0 0 10px #ffcc0033;
-      background: #ffcc0008;
-    }
-
-    .add-btn {
-      width: 100%;
-      padding: 10px;
-      background: transparent;
-      border: 1px solid #ffcc00;
-      color: #ffcc00;
-      cursor: pointer;
-      font-family: monospace;
-      font-size: 13px;
-      letter-spacing: 1px;
-    }
-    .add-btn:hover { background: #ffcc0018; }
-
-    .form-msg { font-size: 12px; letter-spacing: 1px; margin-top: 8px; height: 16px; transition: all 0.2s; }
-    .form-msg.ok  { color: #00ff99; }
-    .form-msg.err { color: #ff4444; }
-
-    /* ── TABLE ── */
-    .rtable { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 4px; }
-    .rtable th {
-      font-size: 11px; letter-spacing: 1px;
-      color: #ffcc0055; text-align: left;
-      padding: 6px 8px; border-bottom: 1px solid #ffcc0022;
-    }
-    .rtable td { padding: 9px 8px; border-bottom: 1px solid #ffcc0015; vertical-align: middle; color: #ffcc00; transition: background 0.15s; }
-    .rtable tr:hover td { background: #ffcc000d; }
-
-    .col-code { color: #00ffff; font-weight: bold; font-size: 15px; white-space: nowrap; text-shadow: 0 0 6px #00ffff55; }
-    .col-url  { font-size: 11px; opacity: 0.45; word-break: break-all; }
-
-    .visit-badge {
-      display: inline-block;
-      background: #ffcc0015;
-      border: 1px solid #ffcc0044;
-      color: #ffcc00;
-      font-size: 12px;
-      padding: 2px 10px;
-      letter-spacing: 1px;
-      min-width: 40px;
-      text-align: center;
-      transition: background 0.2s, border-color 0.2s;
-    }
-    .rtable tr:hover .visit-badge { background: #ffcc0025; border-color: #ffcc0077; }
-
-    .edit-field {
-      background: transparent;
-      border: 1px solid #ffcc0044;
-      color: #ffcc00;
-      padding: 5px 8px;
-      font-family: monospace;
-      font-size: 12px;
-      width: 100%;
       outline: none;
       transition: border-color 0.2s, box-shadow 0.2s;
     }
-    .edit-field:focus { border-color: #ffcc00; box-shadow: 0 0 8px #ffcc0033; }
+    .f-input::placeholder { color: #ffcc0030; }
+    .f-input:focus { border-color: #ffcc00; box-shadow: 0 0 10px #ffcc0022; }
 
-    .act-btns { display: flex; gap: 6px; }
-
-    .act-btn {
-      padding: 5px 11px;
-      font-size: 11px;
-      font-family: monospace;
-      cursor: pointer;
+    .add-btn {
+      width: 100%;
+      padding: 12px;
       background: transparent;
-      letter-spacing: 0.5px;
-      white-space: nowrap;
-      transition: background 0.18s, color 0.18s, box-shadow 0.18s;
-    }
-    .act-btn.edit   { border: 1px solid #ffcc00; color: #ffcc00; }
-    .act-btn.save   { border: 1px solid #00ffcc; color: #00ffcc; }
-    .act-btn.del    { border: 1px solid #ff4444; color: #ff4444; }
-    .act-btn.cancel { border: 1px solid #ffcc0055; color: #ffcc0077; }
-    .act-btn:hover  { opacity: 0.75; }
-
-    .no-routes { text-align: center; color: #ffcc0033; padding: 24px; font-size: 13px; letter-spacing: 1px; }
-
-    .owner-bottom { display: flex; justify-content: space-between; align-items: center; margin-top: 28px; }
-
-    .reset-visits-btn {
-      padding: 8px 18px;
-      background: transparent;
-      border: 1px solid #ff444033;
-      color: #ff444066;
-      cursor: pointer;
-      font-family: monospace;
-      font-size: 11px;
-      letter-spacing: 1px;
-      transition: border-color 0.2s, color 0.2s, box-shadow 0.2s;
-    }
-    .reset-visits-btn:hover { border-color: #ff4444; color: #ff4444; box-shadow: 0 0 10px #ff444433; }
-
-    .close-owner-btn {
-      padding: 10px 36px;
-      background: transparent;
-      border: 1px solid #ffcc00;
+      border: 1px solid #ffcc0055;
       color: #ffcc00;
       cursor: pointer;
-      font-family: monospace;
-      font-size: 13px;
-      letter-spacing: 2px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 12px;
+      letter-spacing: 3px;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.2s;
     }
-    .close-owner-btn:hover { background: #ffcc0018; }
+    .add-btn::before { content:""; position:absolute; inset:0; background:#ffcc00; transform:translateX(-101%); transition:transform 0.3s ease; z-index:0; }
+    .add-btn span { position:relative; z-index:1; transition:color 0.3s; }
+    .add-btn:hover { border-color: #ffcc00; }
+    .add-btn:hover::before { transform:translateX(0); }
+    .add-btn:hover span { color:#000; }
+
+    .form-msg { font-size: 11px; letter-spacing: 2px; margin-top: 8px; height: 16px; }
+    .form-msg.ok  { color: #00ff99; }
+    .form-msg.err { color: #ff4444; }
+
+    /* TABLE */
+    .rtable { width:100%; border-collapse:collapse; font-size:12px; margin-top:4px; }
+    .rtable th { font-size:10px; letter-spacing:2px; color:#ffcc0044; text-align:left; padding:6px 8px; border-bottom:1px solid #ffcc0015; }
+    .rtable td { padding:9px 8px; border-bottom:1px solid #ffcc000f; vertical-align:middle; color:#ffcc00; }
+    .rtable tr:hover td { background:#ffcc0008; }
+
+    .col-code { font-family:'Orbitron',monospace; color:#00e5ff; font-size:13px; font-weight:bold; white-space:nowrap; }
+    .col-url  { font-size:10px; opacity:0.4; word-break:break-all; }
+
+    .vbadge {
+      display:inline-block;
+      background:#ffcc0012;
+      border:1px solid #ffcc0033;
+      color:#ffcc00;
+      font-size:11px;
+      padding:2px 10px;
+      min-width:40px;
+      text-align:center;
+      letter-spacing:1px;
+    }
+
+    .e-field {
+      background:rgba(0,0,0,0.5);
+      border:1px solid #ffcc0033;
+      color:#ffcc00;
+      padding:5px 8px;
+      font-family:'Share Tech Mono',monospace;
+      font-size:12px;
+      width:100%;
+      outline:none;
+    }
+    .e-field:focus { border-color:#ffcc00; }
+
+    .act-btns { display:flex; gap:6px; }
+    .act-btn {
+      padding:5px 11px; font-size:10px;
+      font-family:'Share Tech Mono',monospace;
+      cursor:pointer; background:transparent;
+      letter-spacing:1px; white-space:nowrap;
+      transition:background 0.15s, color 0.15s;
+    }
+    .act-btn.edit   { border:1px solid #ffcc0066; color:#ffcc00; }
+    .act-btn.save   { border:1px solid #00e5ff66; color:#00e5ff; }
+    .act-btn.del    { border:1px solid #ff333366; color:#ff3333; }
+    .act-btn.cancel { border:1px solid #ffcc0022; color:#ffcc0055; }
+    .act-btn.edit:hover   { background:#ffcc00; color:#000; }
+    .act-btn.save:hover   { background:#00e5ff; color:#000; }
+    .act-btn.del:hover    { background:#ff3333; color:#000; }
+    .act-btn.cancel:hover { background:#ffcc0022; color:#ffcc00; }
+
+    .no-routes { text-align:center; color:#ffcc0030; padding:24px; font-size:12px; letter-spacing:2px; }
+
+    .owner-bottom { display:flex; justify-content:space-between; align-items:center; margin-top:28px; }
+
+    .reset-btn {
+      padding:8px 16px; background:transparent;
+      border:1px solid #ff333322; color:#ff333355;
+      cursor:pointer; font-family:'Share Tech Mono',monospace;
+      font-size:10px; letter-spacing:2px;
+      transition:border-color 0.2s, color 0.2s;
+    }
+    .reset-btn:hover { border-color:#ff3333; color:#ff3333; }
+
+    .close-owner {
+      padding:10px 32px; background:transparent;
+      border:1px solid #ffcc0055; color:#ffcc00;
+      cursor:pointer; font-family:'Share Tech Mono',monospace;
+      font-size:11px; letter-spacing:3px;
+      position:relative; overflow:hidden;
+    }
+    .close-owner::before { content:""; position:absolute; inset:0; background:#ffcc00; transform:translateX(-101%); transition:transform 0.3s ease; z-index:0; }
+    .close-owner span { position:relative; z-index:1; transition:color 0.3s; }
+    .close-owner:hover::before { transform:translateX(0); }
+    .close-owner:hover span { color:#000; }
+
+    /* ── FROM RK.COM ── */
+
+    /* Scanlines */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        var(--tc-faint) 2px,
+        var(--tc-faint) 4px
+      );
+      pointer-events: none;
+      z-index: 999;
+    }
+
+    /* Pulse ring behind status dot */
+    .dot::before {
+      content: '';
+      position: absolute;
+      inset: -4px;
+      border-radius: 50%;
+      background: var(--tc);
+      opacity: 0;
+      animation: pulse-ring 1.5s ease-out infinite;
+    }
+    .dot { position: relative; }
+
+    @keyframes pulse-ring {
+      0%   { transform: scale(1); opacity: 0.6; }
+      100% { transform: scale(2); opacity: 0; }
+    }
+
+    /* Fade in panel on load */
+    .panel {
+      animation: fadeIn 0.5s ease forwards;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Blink cursor on title */
+    .site-title::after {
+      content: '_';
+      animation: blink 1s step-end infinite;
+      margin-left: 4px;
+      font-size: 0.6em;
+      opacity: 0.7;
+      vertical-align: middle;
+    }
+    @keyframes blink {
+      0%,100% { opacity: 0.7; }
+      50%      { opacity: 0; }
+    }
+
+    /* Orbitron number display style on input */
+    .code-input {
+      font-family: 'Orbitron', monospace;
+      text-shadow: 0 0 20px var(--tc-dim), 0 0 40px var(--tc-glow);
+    }
+
+    /* Granted/denied status text fade in */
+    #statusText { animation: fadeIn 0.3s ease forwards; }
+
+
+    /* ── MATRIX RAIN ── */
+    #matrix {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 0;
+      opacity: 0.18;
+      pointer-events: none;
+    }
+
   </style>
 </head>
 <body>
 
 <canvas id="matrix"></canvas>
 
-<!-- THEME SWITCHER -->
+<!-- THEME BAR -->
 <div class="theme-bar">
   <span class="theme-label">THEME</span>
-  <div class="theme-dot dot-cyan  active" title="Cyan"  onclick="setTheme('cyan')"></div>
+  <div class="theme-dot dot-cyan active"  title="Cyan"  onclick="setTheme('cyan')"></div>
   <div class="theme-dot dot-green"        title="Green" onclick="setTheme('green')"></div>
   <div class="theme-dot dot-red"          title="Red"   onclick="setTheme('red')"></div>
   <div class="theme-dot dot-amber"        title="Amber" onclick="setTheme('amber')"></div>
 </div>
 
-<!-- MAIN TERMINAL -->
-<div class="container" id="mainContainer">
-  <h1>ACCESS TERMINAL</h1>
-  <input class="main-input" id="code" type="text" placeholder="ENTER CODE" maxlength="10"
-         onkeydown="if(event.key==='Enter') go()">
-  <button class="execute-btn" onclick="go()">EXECUTE</button>
-  <div id="status"></div>
+<!-- MAIN PAGE -->
+<div class="page">
+  <div class="site-label">ACCESS PORTAL</div>
+  <div class="site-title">ACCESS TERMINAL</div>
+  <div class="site-sub">ENTER ACCESS CODE TO CONTINUE</div>
+
+  <div class="panel" id="mainPanel">
+    <div class="corner-bl"></div>
+    <div class="corner-br"></div>
+
+    <div class="status-dot-row" id="dotRow">
+      <div class="dot" id="statusDot"></div>
+      <span id="dotLabel">AWAITING INPUT</span>
+    </div>
+
+    <div class="input-label">ACCESS CODE</div>
+    <input class="code-input" id="code" type="text"
+           placeholder="— — — — —" maxlength="10"
+           onkeydown="if(event.key==='Enter') go()"
+           oninput="onType()">
+
+    <button class="exec-btn" onclick="go()">
+      <span>EXECUTE ACCESS</span>
+    </button>
+
+    <div id="statusText"></div>
+  </div>
 </div>
 
-<!-- PORTAL BUTTONS -->
-<button class="portal-btn owner" onclick="openOwnerAuth()">Owner Portal</button>
-<button class="portal-btn admin" onclick="openAdminAuth()">Admin Portal</button>
+<!-- FOOTER -->
+<div class="footer">
+  <span>ACCESS TERMINAL</span>
+  <span class="footer-sep">|</span>
+  <span>SECURE ACCESS TERMINAL</span>
+  <span class="footer-sep">|</span>
+  <button onclick="openAdminAuth()">ADMIN</button>
+  <span class="footer-sep">|</span>
+  <button class="owner-link" onclick="openOwnerAuth()">OWNER</button>
+</div>
 
 <!-- ADMIN AUTH -->
 <div class="modal-overlay" id="adminAuthModal">
-  <div class="modal-box theme-modal">
+  <div class="modal-box theme-m">
+    <div class="cb"></div><div class="cb2"></div>
     <h3>ADMIN ACCESS</h3>
     <div class="modal-err" id="adminAuthErr"></div>
-    <input class="modal-input" id="adminPassInput" type="password" placeholder="PASSWORD"
+    <input class="modal-input" id="adminPassInput" type="password" placeholder="ENTER PASSWORD"
            onkeydown="if(event.key==='Enter') submitAdminAuth()">
     <div class="modal-btns">
-      <button class="modal-btn" onclick="submitAdminAuth()">ENTER</button>
-      <button class="modal-btn cancel" onclick="closeModal('adminAuthModal')">CANCEL</button>
+      <button class="modal-btn" onclick="submitAdminAuth()"><span>ENTER</span></button>
+      <button class="modal-btn cancel" onclick="closeModal('adminAuthModal')"><span>CANCEL</span></button>
     </div>
   </div>
 </div>
 
 <!-- ADMIN PANEL -->
 <div class="modal-overlay" id="adminOverlay">
-  <div class="admin-panel-box">
+  <div class="admin-box">
+    <div class="cb"></div><div class="cb2"></div>
     <h3>ADMIN DATABASE</h3>
     <div id="adminList"></div>
-    <button class="close-modal-btn" onclick="closeModal('adminOverlay')">CLOSE</button>
+    <button class="close-btn" onclick="closeModal('adminOverlay')">CLOSE</button>
   </div>
 </div>
 
 <!-- OWNER AUTH -->
 <div class="modal-overlay" id="ownerAuthModal">
-  <div class="modal-box gold-modal">
+  <div class="modal-box gold-m">
+    <div class="cb"></div><div class="cb2"></div>
     <h3>OWNER ACCESS</h3>
     <div class="modal-err" id="ownerAuthErr"></div>
-    <input class="modal-input" id="ownerPassInput" type="password" placeholder="PASSWORD"
+    <input class="modal-input" id="ownerPassInput" type="password" placeholder="ENTER PASSWORD"
            onkeydown="if(event.key==='Enter') submitOwnerAuth()">
     <div class="modal-btns">
-      <button class="modal-btn" onclick="submitOwnerAuth()">ENTER</button>
-      <button class="modal-btn cancel" onclick="closeModal('ownerAuthModal')">CANCEL</button>
+      <button class="modal-btn" onclick="submitOwnerAuth()"><span>ENTER</span></button>
+      <button class="modal-btn cancel" onclick="closeModal('ownerAuthModal')"><span>CANCEL</span></button>
     </div>
   </div>
 </div>
 
 <!-- CONFIRM DELETE -->
 <div class="modal-overlay" id="confirmModal" style="z-index:400;">
-  <div class="modal-box gold-modal">
+  <div class="modal-box gold-m">
+    <div class="cb"></div><div class="cb2"></div>
     <h3>CONFIRM DELETE</h3>
     <div class="confirm-msg" id="confirmMsg"></div>
     <div class="modal-btns">
-      <button class="modal-btn" id="confirmOkBtn">DELETE</button>
-      <button class="modal-btn cancel" onclick="closeModal('confirmModal')">CANCEL</button>
+      <button class="modal-btn" id="confirmOkBtn"><span>DELETE</span></button>
+      <button class="modal-btn cancel" onclick="closeModal('confirmModal')"><span>CANCEL</span></button>
     </div>
   </div>
 </div>
@@ -517,132 +850,185 @@
 <!-- OWNER PORTAL -->
 <div id="ownerOverlay">
   <div id="ownerPanel">
+    <div class="cb"></div><div class="cb2"></div>
     <h2>&#9670; OWNER PORTAL &#9670;</h2>
-    <div class="section-label">ADD NEW ROUTE</div>
+
+    <div class="sec-label">ADD NEW ROUTE</div>
     <div class="add-grid">
-      <input class="field-input" id="nCode" type="text" placeholder="Code  (e.g. 1234)" maxlength="12">
-      <input class="field-input" id="nName" type="text" placeholder="Site Name">
-      <input class="field-input span2" id="nUrl"  type="text" placeholder="URL  (https://...)">
-      <input class="field-input span2" id="nDesc" type="text" placeholder="Description (optional)">
+      <input class="f-input" id="nCode" type="text" placeholder="Code (e.g. 1234)" maxlength="12">
+      <input class="f-input" id="nName" type="text" placeholder="Site Name">
+      <input class="f-input span2" id="nUrl"  type="text" placeholder="URL (https://...)">
+      <input class="f-input span2" id="nDesc" type="text" placeholder="Description (optional)">
       <div class="span2">
-        <button class="add-btn" onclick="addRoute()">+ ADD ROUTE</button>
+        <button class="add-btn" onclick="addRoute()"><span>+ ADD ROUTE</span></button>
         <div class="form-msg" id="addMsg"></div>
       </div>
     </div>
-    <div class="section-label">MANAGE ROUTES</div>
+
+    <div class="sec-label">MANAGE ROUTES</div>
     <table class="rtable">
-      <thead>
-        <tr>
-          <th style="width:65px">CODE</th>
-          <th>NAME</th>
-          <th>URL / DESC</th>
-          <th style="width:60px;text-align:center;">VISITS</th>
-          <th style="width:115px">ACTIONS</th>
-        </tr>
-      </thead>
+      <thead><tr>
+        <th style="width:65px">CODE</th>
+        <th>NAME</th>
+        <th>URL / DESC</th>
+        <th style="width:62px;text-align:center">VISITS</th>
+        <th style="width:115px">ACTIONS</th>
+      </tr></thead>
       <tbody id="routesTbody"></tbody>
     </table>
+
     <div class="owner-bottom">
-      <button class="reset-visits-btn" onclick="resetAllVisits()">RESET ALL VISITS</button>
-      <button class="close-owner-btn" onclick="closeOwner()">CLOSE PORTAL</button>
+      <button class="reset-btn" onclick="resetAllVisits()">RESET ALL VISITS</button>
+      <button class="close-owner" onclick="closeOwner()"><span>CLOSE PORTAL</span></button>
     </div>
   </div>
 </div>
 
 <script>
-/* ── MATRIX ── */
-const canvas = document.getElementById("matrix");
-const ctx    = canvas.getContext("2d");
-canvas.width  = window.innerWidth;
-canvas.height = window.innerHeight;
-const fontSize = 14;
-const columns  = Math.floor(canvas.width / fontSize);
-const drops    = Array(columns).fill(1);
-let matColor   = "#00ffcc";
+/* ── MATRIX RAIN ── */
+(function(){
+  const canvas = document.getElementById("matrix");
+  const ctx    = canvas.getContext("2d");
 
-(function drawMatrix() {
-  ctx.fillStyle = "rgba(0,0,0,0.05)";
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-  ctx.fillStyle = matColor;
-  ctx.font = fontSize + "px monospace";
-  drops.forEach((y, i) => {
-    ctx.fillText(Math.random() > 0.5 ? "1" : "0", i * fontSize, y * fontSize);
-    if (y * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
-    drops[i]++;
-  });
-  setTimeout(drawMatrix, 45);
+  function resize() {
+    canvas.width  = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener("resize", resize);
+
+  const fontSize = 14;
+  let columns = Math.floor(canvas.width / fontSize);
+  let drops   = Array(columns).fill(1);
+
+  // characters: mix of katakana + binary for that classic matrix look
+  const chars = "アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン01";
+
+  function getColor() {
+    const el = document.documentElement;
+    const style = getComputedStyle(el);
+    // read current theme color from CSS variable
+    const map = {
+      "theme-green": "#00ff41",
+      "theme-red":   "#ff2233",
+      "theme-amber": "#ffb000",
+      "theme-cyan":  "#00e5ff",
+    };
+    for (const [cls, col] of Object.entries(map)) {
+      if (el.classList.contains(cls)) return col;
+    }
+    return "#00e5ff";
+  }
+
+  function draw() {
+    ctx.fillStyle = "rgba(0,0,0,0.05)";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    const color = getColor();
+    ctx.font = fontSize + "px Share Tech Mono, monospace";
+
+    drops.forEach((y, i) => {
+      const char = chars[Math.floor(Math.random() * chars.length)];
+
+      // brighter head character
+      ctx.fillStyle = "#ffffff";
+      ctx.fillText(char, i * fontSize, y * fontSize);
+
+      // trail
+      ctx.fillStyle = color;
+      ctx.fillText(chars[Math.floor(Math.random() * chars.length)], i * fontSize, (y - 1) * fontSize);
+
+      if (y * fontSize > canvas.height && Math.random() > 0.975) {
+        drops[i] = 0;
+      }
+      drops[i]++;
+    });
+
+    // re-sync columns on resize
+    columns = Math.floor(canvas.width / fontSize);
+    while (drops.length < columns) drops.push(Math.floor(Math.random() * canvas.height / fontSize));
+    drops.length = columns;
+  }
+
+  setInterval(draw, 45);
 })();
 
 /* ── THEME ── */
-const THEMES = {
-  cyan:  { cls: "theme-cyan",  mat: "#00ffcc" },
-  green: { cls: "theme-green", mat: "#00ff41" },
-  red:   { cls: "theme-red",   mat: "#ff2222" },
-  amber: { cls: "theme-amber", mat: "#ffb000" },
-};
+const THEMES = { cyan:"theme-cyan", green:"theme-green", red:"theme-red", amber:"theme-amber" };
+let currentTheme = "cyan";
 
 function setTheme(name) {
-  const t = THEMES[name];
-  if (!t) return;
-  document.documentElement.className = t.cls;
-  matColor = t.mat;
+  if (!THEMES[name]) return;
+  document.documentElement.className = THEMES[name];
+  currentTheme = name;
   document.querySelectorAll(".theme-dot").forEach(d => d.classList.remove("active"));
-  document.querySelector(".dot-" + name).classList.add("active");
+  document.querySelector(".dot-"+name).classList.add("active");
   localStorage.setItem("term_theme", name);
 }
-(function() {
-  const saved = localStorage.getItem("term_theme");
-  if (saved && THEMES[saved]) setTheme(saved);
-})();
+(function(){ const s=localStorage.getItem("term_theme"); if(s&&THEMES[s]) setTheme(s); })();
 
 /* ── DATA ── */
-const STORE = "term_routes_v2", VISIT_STORE = "term_visits_v1";
+const STORE="term_routes_v2", VSTSTORE="term_visits_v1";
 const DEFAULTS = {
-  "2010": { name: "MultiMovies",  url: "https://multimovies.fyi",                                                                 desc: "Movie streaming website (free HD content)" },
-  "1111": { name: "Hacker AI",    url: "https://hackerai.co/",                                                                    desc: "AI chatbot & hacking-style assistant tool" },
-  "1212": { name: "NoteGPT",      url: "https://notegpt.io",                                                                      desc: "AI notes summarizer & productivity tool" },
-  "1819": { name: "TBCPL",        url: "https://tbcpl.lol/",                                                                      desc: "Online library & digital resources" },
-  "2222": { name: "WhatsMyName",  url: "https://whatsmyname.me/",                                                                 desc: "Username search across social platforms" },
-  "4111": { name: "FMHY",         url: "https://fmhy.net/",                                                                       desc: "Huge collection of free tools & resources" },
-  "8787": { name: "Moewalls",     url: "https://moewalls.com/",                                                                   desc: "Live wallpapers for desktop" },
-  "4545": { name: "BugMeNot",     url: "https://bugmenot.com/",                                                                   desc: "Shared logins for websites" },
-  "7777": { name: "ElevenLabs",   url: "https://elevenlabs.io/app/speech-to-text",                                               desc: "AI voice & speech tools" },
-  "9999": { name: "Drive Vault",  url: "https://drive.google.com/file/d/1Dquo4RZdefNapARHtKG7jgteNK9F7aCf/view?usp=drive_link", desc: "Private Google Drive storage file" }
+  "2010":{ name:"MultiMovies",  url:"https://multimovies.fyi",                                                                desc:"Movie streaming website (free HD content)" },
+  "1111":{ name:"Hacker AI",    url:"https://hackerai.co/",                                                                   desc:"AI chatbot & hacking-style assistant tool" },
+  "1212":{ name:"NoteGPT",      url:"https://notegpt.io",                                                                     desc:"AI notes summarizer & productivity tool" },
+  "1819":{ name:"TBCPL",        url:"https://tbcpl.lol/",                                                                     desc:"Online library & digital resources" },
+  "2222":{ name:"WhatsMyName",  url:"https://whatsmyname.me/",                                                               desc:"Username search across social platforms" },
+  "4111":{ name:"FMHY",         url:"https://fmhy.net/",                                                                      desc:"Huge collection of free tools & resources" },
+  "8787":{ name:"Moewalls",     url:"https://moewalls.com/",                                                                  desc:"Live wallpapers for desktop" },
+  "4545":{ name:"BugMeNot",     url:"https://bugmenot.com/",                                                                  desc:"Shared logins for websites" },
+  "7777":{ name:"ElevenLabs",   url:"https://elevenlabs.io/app/speech-to-text",                                             desc:"AI voice & speech tools" },
+  "9999":{ name:"Drive Vault",  url:"https://drive.google.com/file/d/1Dquo4RZdefNapARHtKG7jgteNK9F7aCf/view?usp=drive_link",desc:"Private Google Drive storage file" }
 };
 
-let routes = {}, visits = {};
-
-function loadData() {
-  try { const s = localStorage.getItem(STORE); routes = s ? JSON.parse(s) : JSON.parse(JSON.stringify(DEFAULTS)); } catch(e) { routes = JSON.parse(JSON.stringify(DEFAULTS)); }
-  try { const v = localStorage.getItem(VISIT_STORE); visits = v ? JSON.parse(v) : {}; } catch(e) { visits = {}; }
+let routes={}, visits={};
+function loadData(){
+  try{ const s=localStorage.getItem(STORE); routes=s?JSON.parse(s):JSON.parse(JSON.stringify(DEFAULTS)); }catch(e){ routes=JSON.parse(JSON.stringify(DEFAULTS)); }
+  try{ const v=localStorage.getItem(VSTSTORE); visits=v?JSON.parse(v):{}; }catch(e){ visits={}; }
 }
-function saveRoutes() { try { localStorage.setItem(STORE, JSON.stringify(routes)); } catch(e) {} }
-function saveVisits() { try { localStorage.setItem(VISIT_STORE, JSON.stringify(visits)); } catch(e) {} }
+function saveRoutes(){ try{localStorage.setItem(STORE,JSON.stringify(routes));}catch(e){} }
+function saveVisits(){ try{localStorage.setItem(VSTSTORE,JSON.stringify(visits));}catch(e){} }
 loadData();
 
 /* ── TERMINAL ── */
+function onType() {
+  const dot = document.getElementById("statusDot");
+  const lbl = document.getElementById("dotLabel");
+  dot.className = "dot";
+  lbl.textContent = "AWAITING INPUT";
+}
+
 function go() {
   const code   = document.getElementById("code").value.trim();
-  const status = document.getElementById("status");
+  const status = document.getElementById("statusText");
+  const dot    = document.getElementById("statusDot");
+  const lbl    = document.getElementById("dotLabel");
 
+  lbl.textContent  = "PROCESSING...";
   status.style.color = "var(--tc)";
-  status.innerText = "ACCESSING...";
+  status.textContent = "";
 
   setTimeout(() => {
     if (routes[code]) {
-      status.innerText = "ACCESS GRANTED \u{1F680}";
-      status.style.color = "var(--tc)";
-      visits[code] = (visits[code] || 0) + 1;
+      dot.className    = "dot granted";
+      lbl.textContent  = "ACCESS GRANTED";
+      status.style.color = "#00ff99";
+      status.textContent = "\u2713 REDIRECTING...";
+      visits[code] = (visits[code]||0)+1;
       saveVisits();
       setTimeout(() => { window.open(routes[code].url, "_blank"); }, 900);
+      setTimeout(() => { dot.className="dot"; lbl.textContent="AWAITING INPUT"; status.textContent=""; }, 2500);
     } else {
-      status.style.color = "#ff4444";
-      status.innerText   = "ACCESS DENIED";
-      document.getElementById("mainContainer").classList.add("shake");
+      dot.className    = "dot denied";
+      lbl.textContent  = "ACCESS DENIED";
+      status.style.color = "#ff3333";
+      status.textContent = "\u2717 INVALID CODE";
+      document.getElementById("mainPanel").classList.add("shake");
       setTimeout(() => {
-        document.getElementById("mainContainer").classList.remove("shake");
-        status.innerText = "";
-      }, 900);
+        document.getElementById("mainPanel").classList.remove("shake");
+        dot.className="dot"; lbl.textContent="AWAITING INPUT"; status.textContent="";
+      }, 1000);
     }
   }, 700);
 }
@@ -653,91 +1039,84 @@ function closeModal(id) { document.getElementById(id).classList.remove("active")
 
 /* ── ADMIN ── */
 function openAdminAuth() {
-  document.getElementById("adminPassInput").value = "";
-  document.getElementById("adminAuthErr").innerText = "";
+  document.getElementById("adminPassInput").value="";
+  document.getElementById("adminAuthErr").textContent="";
   openModal("adminAuthModal");
-  setTimeout(() => document.getElementById("adminPassInput").focus(), 60);
+  setTimeout(()=>document.getElementById("adminPassInput").focus(),60);
 }
 function submitAdminAuth() {
-  if (document.getElementById("adminPassInput").value === "1918") {
+  if (document.getElementById("adminPassInput").value==="1918") {
     closeModal("adminAuthModal"); renderAdmin(); openModal("adminOverlay");
   } else {
-    const err = document.getElementById("adminAuthErr");
-    err.innerText = "WRONG PASSWORD";
-    err.style.animation = "none";
-    requestAnimationFrame(() => { err.style.animation = ""; });
-    document.getElementById("adminPassInput").value = "";
+    document.getElementById("adminAuthErr").textContent="WRONG PASSWORD";
+    document.getElementById("adminPassInput").value="";
     document.getElementById("adminPassInput").focus();
   }
 }
 function renderAdmin() {
-  const keys = Object.keys(routes);
-  const list = document.getElementById("adminList");
-  if (!keys.length) { list.innerHTML = '<div style="opacity:.4;text-align:center;padding:16px;font-size:13px;">No routes.</div>'; return; }
-  list.innerHTML = keys.map(code => `
+  const keys=Object.keys(routes);
+  const list=document.getElementById("adminList");
+  if (!keys.length){ list.innerHTML='<div style="opacity:.3;text-align:center;padding:20px;font-size:12px;letter-spacing:2px;">NO ROUTES</div>'; return; }
+  list.innerHTML=keys.map(c=>`
     <div class="admin-item">
-      <div class="admin-code">[${esc(code)}] <span style="font-size:11px;opacity:0.45;">${visits[code]||0} visits</span></div>
-      <div class="admin-name">${esc(routes[code].name)}</div>
-      <div class="admin-desc">${esc(routes[code].desc || "")}</div>
-      <div class="admin-url">${esc(routes[code].url)}</div>
+      <div class="admin-code">[${esc(c)}] <span style="font-size:10px;opacity:0.4;font-family:monospace;">${visits[c]||0} visits</span></div>
+      <div class="admin-name">${esc(routes[c].name)}</div>
+      <div class="admin-desc">${esc(routes[c].desc||"")}</div>
+      <div class="admin-url">${esc(routes[c].url)}</div>
     </div>`).join("");
 }
 
 /* ── OWNER AUTH ── */
 function openOwnerAuth() {
-  document.getElementById("ownerPassInput").value = "";
-  document.getElementById("ownerAuthErr").innerText = "";
+  document.getElementById("ownerPassInput").value="";
+  document.getElementById("ownerAuthErr").textContent="";
   openModal("ownerAuthModal");
-  setTimeout(() => document.getElementById("ownerPassInput").focus(), 60);
+  setTimeout(()=>document.getElementById("ownerPassInput").focus(),60);
 }
 function submitOwnerAuth() {
-  if (document.getElementById("ownerPassInput").value === "19181918") {
+  if (document.getElementById("ownerPassInput").value==="19181918") {
     closeModal("ownerAuthModal"); clearAddForm(); renderTable();
-    document.getElementById("ownerOverlay").style.display = "block";
+    document.getElementById("ownerOverlay").style.display="block";
   } else {
-    const err = document.getElementById("ownerAuthErr");
-    err.innerText = "WRONG PASSWORD";
-    err.style.animation = "none";
-    requestAnimationFrame(() => { err.style.animation = ""; });
-    document.getElementById("ownerPassInput").value = "";
+    document.getElementById("ownerAuthErr").textContent="WRONG PASSWORD";
+    document.getElementById("ownerPassInput").value="";
     document.getElementById("ownerPassInput").focus();
   }
 }
-function closeOwner() { document.getElementById("ownerOverlay").style.display = "none"; }
+function closeOwner(){ document.getElementById("ownerOverlay").style.display="none"; }
 
-/* ── ADD ROUTE ── */
-function clearAddForm() {
-  ["nCode","nName","nUrl","nDesc"].forEach(id => document.getElementById(id).value = "");
+/* ── ADD ── */
+function clearAddForm(){
+  ["nCode","nName","nUrl","nDesc"].forEach(id=>document.getElementById(id).value="");
   setMsg("addMsg","","");
 }
-function setMsg(id, text, type) {
-  const el = document.getElementById(id);
-  el.textContent = text;
-  el.className = "form-msg" + (type ? " "+type : "");
-  if (text) setTimeout(() => { el.textContent=""; el.className="form-msg"; }, 3500);
+function setMsg(id,text,type){
+  const el=document.getElementById(id);
+  el.textContent=text; el.className="form-msg"+(type?" "+type:"");
+  if(text) setTimeout(()=>{el.textContent="";el.className="form-msg";},3500);
 }
-function addRoute() {
-  const code = document.getElementById("nCode").value.trim();
-  const name = document.getElementById("nName").value.trim();
-  const url  = document.getElementById("nUrl").value.trim();
-  const desc = document.getElementById("nDesc").value.trim();
-  if (!code) return setMsg("addMsg","Code is required.","err");
-  if (!name) return setMsg("addMsg","Name is required.","err");
-  if (!url)  return setMsg("addMsg","URL is required.","err");
-  if (!url.startsWith("http")) return setMsg("addMsg","URL must start with http.","err");
-  if (routes[code]) return setMsg("addMsg",'Code "'+code+'" already exists.',"err");
-  routes[code] = { name, url, desc }; visits[code] = 0;
+function addRoute(){
+  const code=document.getElementById("nCode").value.trim();
+  const name=document.getElementById("nName").value.trim();
+  const url =document.getElementById("nUrl").value.trim();
+  const desc=document.getElementById("nDesc").value.trim();
+  if(!code) return setMsg("addMsg","Code is required.","err");
+  if(!name) return setMsg("addMsg","Name is required.","err");
+  if(!url)  return setMsg("addMsg","URL is required.","err");
+  if(!url.startsWith("http")) return setMsg("addMsg","URL must start with http.","err");
+  if(routes[code]) return setMsg("addMsg",'Code "'+code+'" already exists.',"err");
+  routes[code]={name,url,desc}; visits[code]=0;
   saveRoutes(); saveVisits();
   setMsg("addMsg","Route ["+code+"] added!","ok");
   clearAddForm(); renderTable();
 }
 
 /* ── DELETE ── */
-let pendingDel = null;
-function deleteRoute(code) {
-  pendingDel = code;
-  document.getElementById("confirmMsg").innerText = 'Delete ['+code+'] \u2192 '+routes[code].name+'?\nThis cannot be undone.';
-  document.getElementById("confirmOkBtn").onclick = function() {
+let pendingDel=null;
+function deleteRoute(code){
+  pendingDel=code;
+  document.getElementById("confirmMsg").textContent='Delete ['+code+'] \u2192 '+routes[code].name+'?\nThis cannot be undone.';
+  document.getElementById("confirmOkBtn").onclick=function(){
     delete routes[pendingDel]; delete visits[pendingDel];
     saveRoutes(); saveVisits(); closeModal("confirmModal"); renderTable();
   };
@@ -745,53 +1124,53 @@ function deleteRoute(code) {
 }
 
 /* ── RESET VISITS ── */
-function resetAllVisits() {
-  if (!Object.keys(visits).some(k => visits[k] > 0)) return;
-  document.getElementById("confirmMsg").innerText = "Reset visit counts for ALL routes to zero?";
-  document.getElementById("confirmOkBtn").onclick = function() {
-    Object.keys(visits).forEach(k => visits[k] = 0);
+function resetAllVisits(){
+  if(!Object.keys(visits).some(k=>visits[k]>0)) return;
+  document.getElementById("confirmMsg").textContent="Reset ALL visit counts to zero?";
+  document.getElementById("confirmOkBtn").onclick=function(){
+    Object.keys(visits).forEach(k=>visits[k]=0);
     saveVisits(); closeModal("confirmModal"); renderTable();
   };
   openModal("confirmModal");
 }
 
 /* ── EDIT ── */
-function startEdit(code) {
-  const r = routes[code];
-  const row = document.getElementById("row-"+code);
-  row.innerHTML =
+function startEdit(code){
+  const r=routes[code];
+  const row=document.getElementById("row-"+code);
+  row.innerHTML=
     '<td class="col-code">'+esc(code)+'</td>'+
-    '<td><input class="edit-field" id="e-name-'+code+'" value="'+esc(r.name)+'" placeholder="Name"></td>'+
-    '<td><input class="edit-field" id="e-url-'+code+'" value="'+esc(r.url)+'" placeholder="URL" style="margin-bottom:4px;"><input class="edit-field" id="e-desc-'+code+'" value="'+esc(r.desc||'')+'" placeholder="Desc"></td>'+
-    '<td style="text-align:center;"><span class="visit-badge">'+(visits[code]||0)+'</span></td>'+
+    '<td><input class="e-field" id="e-name-'+code+'" value="'+esc(r.name)+'" placeholder="Name"></td>'+
+    '<td><input class="e-field" id="e-url-'+code+'" value="'+esc(r.url)+'" placeholder="URL" style="margin-bottom:4px"><input class="e-field" id="e-desc-'+code+'" value="'+esc(r.desc||'')+'" placeholder="Desc"></td>'+
+    '<td style="text-align:center"><span class="vbadge">'+(visits[code]||0)+'</span></td>'+
     '<td><div class="act-btns"><button class="act-btn save" onclick="saveEdit(\''+code+'\')">SAVE</button><button class="act-btn cancel" onclick="renderTable()">X</button></div></td>';
 }
-function saveEdit(code) {
-  const name = document.getElementById("e-name-"+code).value.trim();
-  const url  = document.getElementById("e-url-"+code).value.trim();
-  const desc = document.getElementById("e-desc-"+code).value.trim();
-  if (!name || !url || !url.startsWith("http")) return;
-  routes[code] = { name, url, desc }; saveRoutes(); renderTable();
+function saveEdit(code){
+  const name=document.getElementById("e-name-"+code).value.trim();
+  const url =document.getElementById("e-url-"+code).value.trim();
+  const desc=document.getElementById("e-desc-"+code).value.trim();
+  if(!name||!url||!url.startsWith("http")) return;
+  routes[code]={name,url,desc}; saveRoutes(); renderTable();
 }
 
 /* ── TABLE ── */
-function renderTable() {
-  const tbody = document.getElementById("routesTbody");
-  const keys  = Object.keys(routes);
-  if (!keys.length) { tbody.innerHTML = '<tr><td colspan="5" class="no-routes">No routes yet. Add one above.</td></tr>'; return; }
-  keys.sort((a,b) => (visits[b]||0) - (visits[a]||0));
-  tbody.innerHTML = keys.map(code =>
+function renderTable(){
+  const tbody=document.getElementById("routesTbody");
+  const keys=Object.keys(routes);
+  if(!keys.length){ tbody.innerHTML='<tr><td colspan="5" class="no-routes">NO ROUTES YET</td></tr>'; return; }
+  keys.sort((a,b)=>(visits[b]||0)-(visits[a]||0));
+  tbody.innerHTML=keys.map(code=>
     '<tr id="row-'+code+'">'+
       '<td class="col-code">'+esc(code)+'</td>'+
       '<td>'+esc(routes[code].name)+'</td>'+
-      '<td><div class="col-url">'+esc(routes[code].url)+'</div><div style="font-size:11px;opacity:0.4;margin-top:2px;">'+esc(routes[code].desc||"")+'</div></td>'+
-      '<td style="text-align:center;"><span class="visit-badge">'+(visits[code]||0)+'</span></td>'+
+      '<td><div class="col-url">'+esc(routes[code].url)+'</div><div style="font-size:10px;opacity:0.35;margin-top:2px">'+esc(routes[code].desc||"")+'</div></td>'+
+      '<td style="text-align:center"><span class="vbadge">'+(visits[code]||0)+'</span></td>'+
       '<td><div class="act-btns"><button class="act-btn edit" onclick="startEdit(\''+code+'\')">EDIT</button><button class="act-btn del" onclick="deleteRoute(\''+code+'\')">DEL</button></div></td>'+
     '</tr>'
   ).join("");
 }
 
-function esc(str) {
+function esc(str){
   return String(str).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/'/g,"&#39;");
 }
 </script>
